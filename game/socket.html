@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <script>
+      var socket = io.connect();
+      socket.emit('add',{'A': 1, 'B': 2});
+      socket.on('result', function(data){
+      	console.log(data['rst']);
+      });
+    </script>
+    <div>This is our socket.html file</div>
+    <p id="AA"></p>
+  </body>
+</html>
