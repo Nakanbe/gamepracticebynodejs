@@ -92,7 +92,7 @@ function gamedb_exec(connection, data, callback){
     	else{
     		for(var i = 0; i < result.length; i++){
     			rstobj[i] = result[i];
-    			rstobj[i]['status'] = result[i]['date'];
+    			rstobj[i]['status'] = result[i]['date'];  //
     		}
     		callback(rstobj);
     	}
