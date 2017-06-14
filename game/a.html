@@ -1,20 +1,155 @@
+<!DOCTYPE html>
 <html>
   <head>
-  <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="jingcai.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="http://127.0.0.1:8001/socket.io/socket.io.js"></script>
   </head>
-  <body>
-    <script>
-      var socket = io.connect('http://127.0.0.1:8001');
-      socket.on('connect', function(){
-        socket.emit('add',{'A': 1, 'B': 2});
-        socket.on('result', function(data){
-          console.log(data['rst']);
-        });
-      });
-      
-    </script>
-    <div>This is our socket.html file</div>
-    <p id="AA"></p>
-  </body>
+<body style="background-color: #003f74;">
+  <div class="content">
+    <div>
+      <div class="contentWrap">
+        <form id="searchform">
+          <span class="startend">
+            起：<input type="date" name="search_start_date" ></input>
+            迄：<input type="date" name="search_end_date"></input>
+          </span>
+          <span class="htat">
+            主隊：<input type="text" name="search_ht"></input>
+            客隊：<input type="text" name="search_at"></input>
+          </span>
+          <span class="choosematch">
+            <span class="choosematch">選擇賽事</span>
+            <select name="search_leaguname">
+              <option value=""></option>
+              <option value="韩足总杯">韩足总杯</option>
+              <option value="国际赛">国际赛</option>
+              <option value="巴西甲">巴西甲</option>
+              <option value="世界杯预">世界杯预</option>
+              <option value="J2联赛">J2联赛</option>
+              <option value="亚冠">亚冠</option>
+              <option value="欧冠">欧冠</option>
+              <option value="南俱杯">南俱杯</option>
+              <option value="日联杯">日联杯</option>
+              <option value="英超">英超</option>
+              <option value="解放者杯">解放者杯</option>
+              <option value="巴西杯">巴西杯</option>
+              <option value="亚洲杯预">亚洲杯预</option>
+              <option value="美公开杯">美公开杯</option> 
+            </select>
+          </span>
+          
+          <input type="button" id="searchbtn" value="搜尋" onclick="searchGame();"></input>
+        </form>
+        <form action="gameanaly.php">
+          <input type="button" id="analybtn" value="分析" onclick="analyGame();"></input>
+        </form>
+        <div id="loadingIMG" style="display:none"><img src="loading128.gif" />資料處理中，請稍後。</div>
+        <table class='gametable' id='gametable'></table>
+      </div>
+    </div>
+  </div>
+</body>
 </html>
+
+<script>
+
+  var socket = io.connect('http://127.0.0.1:8001');
+  socket.on('connect', function(){
+    socket.emit('search_condition',
+      { 'start_date': '2017-06-13',
+        'end_date': '2117-06-14',
+        'leaguname': '',
+        'ht': '',
+        'at': ''});
+    socket.on('result', function(data){
+      output(data);
+    });
+  });
+
+  function r(i) {
+    const str = ".moreContent.more" + i;
+    const idstr = "#more" + i;
+    $(str).slideToggle(0);
+    $(idstr).toggleClass("expanded");
+  }
+
+  function output(Gamedata){
+
+    const color = { 世青赛: '#C58788',
+                    世界杯预: '#336600',
+                    阿根廷杯: '#336699',
+                    国际赛: '#327E7C',
+                    巴西甲: '#336699',
+                    韩足总杯: '#354896',
+                    J2联赛: '#22C126',
+                    亚冠: '#336699',
+                    欧冠: '#F75000',
+                    南俱杯: '#888700',
+                    日联杯: '#08855C',
+                    英超: '#FF3333',
+                    解放者杯: '#00A653',
+                    美职: '#7D3052',
+                    南优胜杯: '#c5aa44',
+                    巴西杯: '#006633',
+                    亚洲杯预: '#37BE5A',
+                    美公开杯: '#B00900'};
+
+    var gametable = "<thead><tr><th width='100'>賽事</th><th width='200'>&nbsp;&nbsp;主隊&nbsp;&nbsp;&nbsp;vs&nbsp;&nbsp;&nbsp;客隊&nbsp;&nbsp;</th><th width='80'>截止</th><th>讓球</th><th width='300'>主勝&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平局&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;客勝</th><th width='150'>競猜人數</th></tr></thead>";
+    var i = 0, change = 1, statuskey = "", str = "", rqcolor = "";
+    //i=>index, 
+    for(i; i < Object.keys(Gamedata).length; i++){
+      gametable += '<tbody>';
+      if(statuskey != Gamedata[i]['status']){
+        statuskey = Gamedata[i]['status'];
+        if(statuskey == "new"){
+          str = "新增";
+        }
+        else if(statuskey == "update"){
+          str = "更新";
+        }
+        else{
+          str = Gamedata[i]['date'] + ' 每次竞猜选择一个选项下注';
+        }
+        gametable += '<tr class="more expanded" id="more' + change + '" style="border-top: 0;" onclick="r(' + change + ');"><td colspan="6"><span class="moreIcon"></span>' + str + ' </td></tr>'
+        change++;
+      }
+      gametable += 
+        '<tr class="moreContent more' + (change-1) + '"><td><span class="leaguname" style="background-color:' + color[Gamedata[i]['leaguname']] + '; color: #FFFFFF">';
+      if(statuskey == 'new'){ //新增要印出來新增的比賽日期
+        gametable += Gamedata[i]['leaguname'] + '</span><span>' + Gamedata[i]['date'] + '</span> </td>';
+      }
+      else{
+        gametable += Gamedata[i]['leaguname'] + '</span> </td>';
+      }
+      gametable +=
+          '<td><span class="vs"><span class="ht">' + Gamedata[i]['ht'] + '</span>vs<span class="at">' + Gamedata[i]['at'] + '</span></span></td><td>' + Gamedata[i]['time'].substr(0, 5) + '</td>';
+      if(Gamedata[i]['rq1'] < 0){ //rq1 < 0 時為綠色
+        rqcolor = 'green';
+      }
+      else{  //rq1 > 0 時為紅色
+        rqcolor = 'red';
+        Gamedata[i]['rq1'] = '+' + Gamedata[i]['rq1'];
+      }
+      if(Gamedata[i]['rq0'] == null){  //沒有資料就不印出來了
+        gametable += '<td><span class="rq2" style="color:'+ rqcolor +';">' + Gamedata[i]['rq1'] + '</span></td>';
+      }
+      else{
+        gametable += '<td><span class="rq1">' + Gamedata[i]['rq0'] + '</span><span class="rq2" style="color:' + rqcolor + ';">' + Gamedata[i]['rq1'] + '</span></td>';
+      }
+      if(Gamedata[i]['odds3'] == null || Gamedata[i]['odds3'] == ''){ //沒有資料就不印出來了
+        gametable +=
+        '<td class="odds"><span>' + Gamedata[i]['odds0'] + '</span><span>' + Gamedata[i]['odds1'] + '</span><span>' + Gamedata[i]['odds2'] + '</span></td>';
+      }
+      else{
+        gametable +=
+        '<td class="odds"><span>' + Gamedata[i]['odds0'] + '</span><span>' + Gamedata[i]['odds1'] + '</span><span>' + Gamedata[i]['odds2'] + '</span><span>' + Gamedata[i]['odds3'] + '</span><span>' + Gamedata[i]['odds4'] + '</span><span>' + Gamedata[i]['odds5'] + '</span></td>';
+      }
+      
+      gametable += '<td style="color:#ed3a37;">' + Gamedata[i]['num'] + '人竞猜</td> </tr>';
+    }
+    gametable += " </tbody>";
+    document.getElementById('gametable').innerHTML = gametable;
+  }
+</script>
