@@ -1,6 +1,6 @@
 var request = require('request');
 var cheerio = require('cheerio');
-var URL = require('url-parse');
+// var URL = require('url-parse');
 
 
 var page = "http://www.kufa88.com/Promotion/jingcai";
@@ -21,7 +21,8 @@ request(page, function(error, response, body){
 		// console.log(i + pagestr('table .more.expanded').eq(i).text());
 		// console.log(pagestr('table .odds span').eq(0).text());
 		pagestr('table .odds span').each(function(i, el){
-			odds.push(pagestr(this).text().trim());
+			odds.push(pagestr(this).text().trim().substring(0, 10));
+			console.log(pagestr(this).text().trim().substring(0, 10))
 		});
 		// console.log(pagestr('.gameTable').html());
 		// odds.push();
@@ -40,8 +41,8 @@ request(page, function(error, response, body){
 			moreContent.each(function(idx){
 				// console.log(pagestr(this).html());
 				var moreContent_html = cheerio.load(pagestr(this).html());
-				Gamedata['0'][idx]['ht'] = moreContent_html('.ht').text();
-				console.log(idx);
+				// Gamedata['0'][idx]['ht'] = moreContent_html('.ht').text();
+				// console.log(idx);
 			});
 
 		}
@@ -51,3 +52,4 @@ request(page, function(error, response, body){
 });
 
 //console.log(Gamedata['2017-06-15 每次竞猜选择一个选项下注'][1]['ht']);
+console.log(odds);

@@ -1,16 +1,6 @@
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
 var io = require('socket.io');
 
-var server = http.createServer(function(){
-	console.log('Connection!C!o!n!n!e!c!t!i!o!n!');
-
-});
-
-server.listen(8001);
-
-var serv_io = io.listen(server);
+var serv_io = io.listen(8001);
 var num = 0;
 
 serv_io.sockets.on('connection',function(socket){
