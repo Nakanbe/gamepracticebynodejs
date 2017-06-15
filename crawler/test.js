@@ -58,18 +58,22 @@
 // 	console.log("c==f");
 // }
 
-var file = require('fs');
-var re = /(brown)/ig;
-var str = 'The Quick Brown Fox Jumps Over The Lazy Dog brown brOwn';
-// var result = re.exec('The Quick Brown Fox Jumps Over The Lazy Dog brown1 brown2');
-// var result = re[Symbol.match](str);
+// var file = require('fs');
+// var re = /(brown)/ig;
+// var str = 'The Quick Brown Fox Jumps Over The Lazy Dog brown brOwn';
+// // var result = re.exec('The Quick Brown Fox Jumps Over The Lazy Dog brown1 brown2');
+// // var result = re[Symbol.match](str);
 
 
-for (var matches = []; result = re.exec(str); matches.push(result));
-// file.writeFile("msg3.txt", matches);
-for(var i = 0; i < matches.length; i++){
-	// console.log(matches[i][1]);
-}
+// for (var matches = []; result = re.exec(str); matches.push(result));
+// // file.writeFile("msg3.txt", matches);
+// for(var i = 0; i < matches.length; i++){
+// 	// console.log(matches[i][1]);
+// }
+
+var arr = [1, 2, 3];
+var arr2 = arr.fill(4, 3, 5);
+console.log(arr2[3]);
 
 
 // var str="1 plus 2 equal 3";
