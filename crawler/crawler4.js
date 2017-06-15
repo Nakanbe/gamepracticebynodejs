@@ -106,7 +106,48 @@ function checksql(connection){
 		var queryinsert = "INSERT INTO betgame (bet_date, bet_leaguname, bet_ht, bet_at, bet_time, bet_rq0, bet_rq1, bet_odds0, bet_odds1, bet_odds2, bet_odds3, bet_odds4, bet_odds5, bet_num) VALUES ";
 		for(var i = 0; i < Object.keys(GameData).length; i++){
 			query_exec(i, GameData, function(j, result){
-				
+				if(result == ""){  //先確認有無資料
+					//沒有就INSERT
+					queryinsert +=  "('" + GameData[j]['date'] + "','" + GameData[j]['leaguname'] + "','" + GameData[j]['ht'] + "','" + GameData[j]['at'] + "','" +  GameData[j]['time'] + "'," + GameData[j]['rq0'] + "," +GameData[j]['rq1'] + ",'" +GameData[j]['odds0'] + "','" + GameData[j]['odds1'] + "','" +GameData[j]['odds2'] + "','" +GameData[j]['odds3'] + "','" +GameData[j]['odds4'] + "','" +GameData[j]['odds5'] + "'," +GameData[j]['num'] + "),";
+					flag = 1;
+					GameData[j]['status'] = 'new'; //增加狀態區分新增和更新 
+					Object.assign(insertGameJSON, GameData[j]);
+				}
+				else {
+					//有就看是否需要更新
+					if(result[0]['odds3'] == 'null'){
+						result[0]['odds3'] = null;
+						result[0]['odds4'] = null;
+						result[0]['odds5'] = null;
+					}
+					if(result[0]['odds0'] != GameData[j]['odds0'] || result[0]['odds1'] != GameData[j]['odds1'] || result[0]['odds2'] != GameData[j]['odds2'] ||
+				     result[0]['odds3'] != GameData[j]['odds3'] || result[0]['odds4'] != GameData[j]['odds4'] || result[0]['odds5'] != GameData[j]['odds5'] || 
+				     result[0]['num'] != GameData[j]['num']){
+						var queryupdate = "UPDATE " +
+				                    		"betgame " +
+				                      "SET " +
+				                        "bet_odds0='" + GameData[j]['odds0'] + "', "+
+				                        "bet_odds1='" + GameData[j]['odds1'] + "', " +
+				                        "bet_odds2='" + GameData[j]['odds2'] + "', " +
+				                        "bet_odds3='" + GameData[j]['odds3'] + "', " +
+				                        "bet_odds4='" + GameData[j]['odds4'] + "', " +
+				                        "bet_odds5='" + GameData[j]['odds5'] + "', " +
+				                        "bet_num=" + GameData[j]['num'] + 
+				                      " WHERE " +
+				                        "bet_ID=" + result[0]['bet_ID'];
+				    GameData[j]['status'] = 'update'; //增加狀態區分新增和更新 
+						Object.assign(updateGameJSON, GameData[j]);
+						console.log(queryupdate);
+						connection.query(queryupdate, function(error){
+				  		if(error) throw error;
+				  	});
+					}
+				}
+				if(j == Object.keys(GameData).length && flag == 1){
+					connection.query(queryinsert, function(error){
+				  	if(error) throw error;
+				  });
+				}
 			});
 		}
 	});
@@ -121,46 +162,5 @@ function query_exec(i, GameData, callback){
 }
 
 function ...(){
-	if(result == ""){  //先確認有無資料
-		//沒有就INSERT
-		queryinsert +=  "('" + GameData[j]['date'] + "','" + GameData[j]['leaguname'] + "','" + GameData[j]['ht'] + "','" + GameData[j]['at'] + "','" +  GameData[j]['time'] + "'," + GameData[j]['rq0'] + "," +GameData[j]['rq1'] + ",'" +GameData[j]['odds0'] + "','" + GameData[j]['odds1'] + "','" +GameData[j]['odds2'] + "','" +GameData[j]['odds3'] + "','" +GameData[j]['odds4'] + "','" +GameData[j]['odds5'] + "'," +GameData[j]['num'] + "),";
-		flag = 1;
-		GameData[j]['status'] = 'new'; //增加狀態區分新增和更新 
-		Object.assign(insertGameJSON, GameData[j]);
-	}
-	else {
-		//有就看是否需要更新
-		if(result[0]['odds3'] == 'null'){
-			result[0]['odds3'] = null;
-			result[0]['odds4'] = null;
-			result[0]['odds5'] = null;
-		}
-		if(result[0]['odds0'] != GameData[j]['odds0'] || result[0]['odds1'] != GameData[j]['odds1'] || result[0]['odds2'] != GameData[j]['odds2'] ||
-	     result[0]['odds3'] != GameData[j]['odds3'] || result[0]['odds4'] != GameData[j]['odds4'] || result[0]['odds5'] != GameData[j]['odds5'] || 
-	     result[0]['num'] != GameData[j]['num']){
-			var queryupdate = "UPDATE " +
-	                    		"betgame " +
-	                      "SET " +
-	                        "bet_odds0='" + GameData[j]['odds0'] + "', "+
-	                        "bet_odds1='" + GameData[j]['odds1'] + "', " +
-	                        "bet_odds2='" + GameData[j]['odds2'] + "', " +
-	                        "bet_odds3='" + GameData[j]['odds3'] + "', " +
-	                        "bet_odds4='" + GameData[j]['odds4'] + "', " +
-	                        "bet_odds5='" + GameData[j]['odds5'] + "', " +
-	                        "bet_num=" + GameData[j]['num'] + 
-	                      " WHERE " +
-	                        "bet_ID=" + result[0]['bet_ID'];
-	    GameData[j]['status'] = 'update'; //增加狀態區分新增和更新 
-			Object.assign(updateGameJSON, GameData[j]);
-			console.log(queryupdate);
-			connection.query(queryupdate, function(error){
-	  		if(error) throw error;
-	  	});
-		}
-	}
-	if(j == Object.keys(GameData).length && flag == 1){
-		connection.query(queryinsert, function(error){
-	  	if(error) throw error;
-	  });
-	}
+	
 }

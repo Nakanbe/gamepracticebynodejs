@@ -1,8 +1,9 @@
 var mysql = require('mysql');
+var async = require('async');
 var connection = mysql.createConnection({
 	host: '127.0.0.1',
-	user: 'jingcai',
-	password: 'kufa88',
+	user: 'root',
+	password: 'admin',
 	database: 'game'
 });
 
@@ -27,20 +28,55 @@ var connection = mysql.createConnection({
 // 	});
 // }
 
-for(var i = 150; i < 200; i++){
-	www(i, function(j,results){
-		console.log(j);
-		console.log(results);
-	});
-}
+
 
 function www(i, callback){
+	var obj = {};
+	for(i; i < 19; i++){
+		queryexec(i, function(results){
+			// console.log(i);
+			// console.log(results);
+			Object.assign(obj, results);
+			console.log(obj);
+		});	
+	}
+	callback(obj);
+}
+
+function queryexec(i, callback){
 	var str = "SELECT * FROM betgame WHERE bet_ID=" + i ;
 	connection.query(str, function(error, results){
 		if(error) throw error;
-		callback(i,results);
+		callback(results);
 	});
 }
+a(function(data){
+	console.log(data);
+});
+function a(callback){
+	var querystr = [];
+	var obj = {};
+	for(var i = 1; i < 19; i++){
+		var str = "SELECT * FROM betgame WHERE bet_ID=" + i ;
+		querystr.push(str);
+	}
+	console.log(querystr);
+	async.eachOf(querystr, function(item,key, callback){
+		console.log(item);
+		connection.query(item, function(error, results){
+			if(error) throw error;
+			obj[key] = {};
+			Object.assign(obj[key], results);
+			callback();
+			// console.log(obj);
+		});
+	}, function(err){
+		console.log(err);
+		callback(obj);
+	});
+	
+}
+
 
 // connection.end();
 
