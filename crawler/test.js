@@ -71,9 +71,9 @@
 // 	// console.log(matches[i][1]);
 // }
 
-var arr = [1, 2, 3];
-var arr2 = arr.fill(4, 3, 5);
-console.log(arr2[3]);
+// var arr = [1, 2, 3];
+// var arr2 = arr.fill(4, 3, 5);
+// console.log(arr2[3]);
 
 
 // var str="1 plus 2 equal 3";
@@ -83,3 +83,69 @@ console.log(arr2[3]);
 // var str = '2016-01-02';
 // var result = re[Symbol.match](str);
 // console.log(result);  // ["2016", "01", "02"]
+
+//----------------------------------------------------------
+// function add(a,b){
+// 	var c = 0;
+// 	for(var i = 0; i < 5; i++){
+// 		setTimeout(function(){
+// 			c = i;
+// 		},1000);
+// 		console.log(c)
+// 	}
+// 	// console.log(c);
+// }
+// add(1,2);
+
+// function sub(a,b){
+// 	for(var i = 0; i < 10000000; i++);
+// 	for(var i = 0; i < 10000000; i++);
+// 	for(var i = 0; i < 10000000; i++);
+// 	var c = a-b;
+// }
+
+// function result(a,b, callback){
+// 	var e = 0, f = 0;
+// 	var e = add(a,b);
+// 	var f = sub(a,b);
+// 	callback(f);
+// 	// add(a,b,function(c){
+// 	// 	e = c + '1';
+// 	// });
+// 	// sub(a,b,function(d){
+// 	// 	f = d + '1';
+// 	// });
+// }
+
+// result(5,2,function(data){
+// 	console.log(data);
+// });
+//-----------------------------------------------------
+// var obj1 = {1:{ht: 'a1', at: 'a2'}, 2:{ht: 'b1', at :'b2'}};
+// var obj2 = {1:{ht: 'c1', at: 'c2'}};
+// var obj3 = {3:{ht: 'd1', at: 'd2'}};
+// var obj6 = {};
+// const obj4 = Object.assign(obj3, obj1, obj2, obj1);
+// obj6 = obj1;
+// var num = (Object.keys(obj1).length + Object.keys(obj2).length);
+// // console.log(typeof (Object.keys(obj1).length + Object.keys(obj2).length));
+// for(var i = 0; i < num; i++){
+// 	var idx = 1;
+// 	if(!(obj6.hasOwnProperty(i))){
+// 		obj6[i] = obj2[idx];
+// 		console.log(",,")
+// 		idx++;
+// 	}
+// }
+// 。var {1, 2} = { obj1, obj2};
+// console.log(JSON.stringify(obj1));
+// console.log(JSON.stringify(obj2));
+// console.log(JSON.stringify(obj3));
+// console.log(JSON.stringify(obj6));
+//{"C":{"C1":"c1","C2":"c2"}}
+//--------------------------------------------------------
+
+for(var i = 0; i < 30; i++){
+	i = 34;
+	console.log("123");
+}

@@ -10,7 +10,6 @@ var connection = mysql.createConnection({  //資料庫連線
 	database: 'game',
 	timezone: 'Asia/Taipei'  
 });
-connection.connect();
 
 // {"strat_date": "2017-06-14",
 //  "end_date": "2017-06-14",
