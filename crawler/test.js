@@ -145,7 +145,13 @@
 //{"C":{"C1":"c1","C2":"c2"}}
 //--------------------------------------------------------
 
-for(var i = 0; i < 30; i++){
-	i = 34;
-	console.log("123");
+function add(a,b, callback){
+	for(var i = 0; i < 10; i++){
+		c = a+b;
+		callback(i);
+	}
 }
+
+add(1,2,function(i){
+	console.log(i);
+});
