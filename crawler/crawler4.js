@@ -2,7 +2,10 @@
 var request = require('request');
 var file = require('fs');
 var mysql = require('mysql');
-var async = require('async')
+var async = require('async');
+var io = require('socket.io');
+
+var server_io = io.listen(8001);
 
 var connection = mysql.createConnection({  //資料庫連線
 	host: '127.0.0.1',
@@ -12,7 +15,24 @@ var connection = mysql.createConnection({  //資料庫連線
 	timezone: 'Asia/Taipei'  
 });
 
-checksql(connection);
+server_io.sockets.on('connection', function(socket){
+	socket.on('analy', function(){
+		checksql(connection, function(data1, data2){
+			// file.writeFile('msg.txt', JSON.stringify(data1));
+			// file.writeFile('msg3.txt', JSON.stringify(data2));
+			var resultJSON = data1.concat(data2);
+			file.writeFile('msg3.txt', JSON.stringify(resultJSON));
+			socket.emit('analydata', (resultJSON));
+		});
+	});
+});
+
+// checksql(connection, function(data1, data2){
+// 	// file.writeFile('msg.txt', JSON.stringify(data1));
+// 	// file.writeFile('msg3.txt', JSON.stringify(data2));
+// 	var resultJSON = data1.concat(data2);
+// 	file.writeFile('msg3.txt', JSON.stringify(resultJSON));
+// });
 
 function analypage(callback){
 	var page = 'http://127.0.0.1/source4.html';
@@ -98,29 +118,30 @@ function analypage(callback){
 	});
 }
 
-function checksql(connection){
+function checksql(connection, callback){
 	analypage(function(GameData){
 		var j = 0;
-		var insertGameJSON = {};
-		var updateGameJSON = {};
+		var insertGameJSON = [];
+		var updateGameJSON = [];
 		var queryinsert = "INSERT INTO betgame (bet_date, bet_leaguname, bet_ht, bet_at, bet_time, bet_rq0, bet_rq1, bet_odds0, bet_odds1, bet_odds2, bet_odds3, bet_odds4, bet_odds5, bet_num) VALUES ";
 		for(var i = 0; i < Object.keys(GameData).length; i++){
 			query_exec(i, GameData, function(j, result){
 				if(result == ""){  //先確認有無資料
-					//沒有就INSERT
-					queryinsert +=  "('" + GameData[j]['date'] + "','" + GameData[j]['leaguname'] + "','" + GameData[j]['ht'] + "','" + GameData[j]['at'] + "','" +  GameData[j]['time'] + "'," + GameData[j]['rq0'] + "," +GameData[j]['rq1'] + ",'" +GameData[j]['odds0'] + "','" + GameData[j]['odds1'] + "','" +GameData[j]['odds2'] + "','" +GameData[j]['odds3'] + "','" +GameData[j]['odds4'] + "','" +GameData[j]['odds5'] + "'," +GameData[j]['num'] + "),";
-					flag = 1;
-					GameData[j]['status'] = 'new'; //增加狀態區分新增和更新 
-					Object.assign(insertGameJSON, GameData[j]);
-				}
-				else {
-					//有就看是否需要更新
-					if(result[0]['odds3'] == 'null'){
-						result[0]['odds3'] = null;
-						result[0]['odds4'] = null;
-						result[0]['odds5'] = null;
-					}
-					if(result[0]['odds0'] != GameData[j]['odds0'] || result[0]['odds1'] != GameData[j]['odds1'] || result[0]['odds2'] != GameData[j]['odds2'] ||
+		  		//沒有就INSERT
+		  		queryinsert +=  "('" + GameData[j]['date'] + "','" + GameData[j]['leaguname'] + "','" + GameData[j]['ht'] + "','" + GameData[j]['at'] + "','" +  GameData[j]['time'] + "'," + GameData[j]['rq0'] + "," +GameData[j]['rq1'] + ",'" +GameData[j]['odds0'] + "','" + GameData[j]['odds1'] + "','" +GameData[j]['odds2'] + "','" +GameData[j]['odds3'] + "','" +GameData[j]['odds4'] + "','" +GameData[j]['odds5'] + "'," +GameData[j]['num'] + "),";
+		  		flag = 1;
+		  		GameData[j]['status'] = 'new'; //增加狀態區分新增和更新 
+		  		// Object.assign(insertGameJSON, GameData[j]);
+		  		insertGameJSON.push(GameData[j]);
+		  	}
+		  	else {
+		  		//有就看是否需要更新
+		  		if(result[0]['odds3'] == 'null'){
+		  			result[0]['odds3'] = null;
+		  			result[0]['odds4'] = null;
+		  			result[0]['odds5'] = null;
+		  		}
+		  		if(result[0]['odds0'] != GameData[j]['odds0'] || result[0]['odds1'] != GameData[j]['odds1'] || result[0]['odds2'] != GameData[j]['odds2'] ||
 				     result[0]['odds3'] != GameData[j]['odds3'] || result[0]['odds4'] != GameData[j]['odds4'] || result[0]['odds5'] != GameData[j]['odds5'] || 
 				     result[0]['num'] != GameData[j]['num']){
 						var queryupdate = "UPDATE " +
@@ -136,7 +157,8 @@ function checksql(connection){
 				                      " WHERE " +
 				                        "bet_ID=" + result[0]['bet_ID'];
 				    GameData[j]['status'] = 'update'; //增加狀態區分新增和更新 
-						Object.assign(updateGameJSON, GameData[j]);
+						// Object.assign(updateGameJSON, GameData[j]);
+						updateGameJSON.push(GameData[j]);
 						console.log(queryupdate);
 						connection.query(queryupdate, function(error){
 				  		if(error) throw error;
@@ -148,6 +170,10 @@ function checksql(connection){
 				  	if(error) throw error;
 				  });
 				}
+				if(j+1 == Object.keys(GameData).length){
+					callback(insertGameJSON, updateGameJSON);
+				}
+				console.log(j);
 			});
 		}
 	});
@@ -155,12 +181,8 @@ function checksql(connection){
 
 function query_exec(i, GameData, callback){
 	var selectquery = "SELECT " + "bet_odds0 as odds0, " +"bet_odds1 as odds1, " +"bet_odds2 as odds2, " +"bet_odds3 as odds3, " +"bet_odds4 as odds4, " +"bet_odds5 as odds5, " +"bet_num as num, " + "bet_ID " + "FROM " +"betgame " + "WHERE " +"bet_date = '" + GameData[i]['date'] + "' AND " +"bet_leaguname = '" + GameData[i]['leaguname'] + "' AND " +"bet_ht = '" + GameData[i]['ht'] + "' AND " +"bet_at = '" + GameData[i]['at'] + "' AND " +"bet_time = '" + GameData[i]['time'] + "'";
-		connection.query(selectquery, function(error, result){  //query 太慢了
-			if(error) throw error;
-			callback(i, result);
-		});
-}
-
-function ...(){
-	
+	connection.query(selectquery, function(error, result){  //query 太慢了
+		if(error) throw error;
+		callback(i, result);
+	});
 }
