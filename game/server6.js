@@ -1,5 +1,4 @@
 //recursive
-//用async
 var request = require('request');
 var file = require('fs');
 var mysql = require('mysql');
@@ -18,8 +17,8 @@ var server_io = io.listen(server);
 
 var connection = mysql.createConnection({  //資料庫連線
 	host: '127.0.0.1',
-	user: 'jingcai',
-	password: 'kufa88',
+	user: 'root',
+	password: 'admin',
 	database: 'game',
 	timezone: 'Asia/Taipei'  
 });
@@ -40,6 +39,8 @@ server_io.sockets.on('connection', function(socket){
 				}
 				socket.emit('result', resultJSON);
 			}
+			insertGameJSON = [];
+			updateGameJSON = [];
 		});
 	});
 	//搜尋
@@ -56,6 +57,7 @@ function analypage(callback){
 	console.log ('visiting page' + page);
 	var GameData = {};  //存放所有抓到的資料
 	request(page, function(error, response, body){
+		if(error) throw error;
 		body = body.replace(/(\r\n|\n|\r)/gm,"");  //移除換行
 		var gameTable_regex = /<table class="gameTable">(.*?)<\/table>/ig;
 		var gameTable_res = gameTable_regex.exec(body);
@@ -189,10 +191,10 @@ function re_query(j, GameData, callback){
 			// 	result[0]['odds4'] = null;
 			// 	result[0]['odds5'] = null;
 			// }
-			console.log("UPDATE");
 			if(result[0]['odds0'] != GameData[j]['odds0'] || result[0]['odds1'] != GameData[j]['odds1'] || result[0]['odds2'] != GameData[j]['odds2'] ||
 		     result[0]['odds3'] != GameData[j]['odds3'] || result[0]['odds4'] != GameData[j]['odds4'] || result[0]['odds5'] != GameData[j]['odds5'] || 
 		     result[0]['num'] != GameData[j]['num']){
+				console.log("UPDATE");
 				var queryupdate = "UPDATE " +
 		                    		"betgame " +
 		                      "SET " +
@@ -207,11 +209,21 @@ function re_query(j, GameData, callback){
 		                        "bet_ID=" + result[0]['bet_ID'];
 		    GameData[j]['status'] = 'update'; //增加狀態區分新增和更新 
 				updateGameJSON.push(GameData[j]);
-				connection.query(queryupdate, function(error){  //跟DB UPDATE
-		  		if(error) throw error;
-		  	});
-		  	console.log("UPDATE FINISH");
-		  	if(j+1 < Object.keys(GameData).length){
+				update_query(queryupdate, function(){
+					console.log("UPDATE FINISH");	
+					if(j+1 < Object.keys(GameData).length){
+						re_query(j+1, GameData, function(){
+							console.log("re:" + j);
+							callback();
+						});
+					}
+					else{
+						callback();
+					}
+				});	
+			}
+			else{
+				if(j+1 < Object.keys(GameData).length){
 					re_query(j+1, GameData, function(){
 						console.log("re:" + j);
 						callback();
@@ -222,6 +234,14 @@ function re_query(j, GameData, callback){
 				}
 			}
 		}
+	});
+}
+
+function update_query(str, callback){
+	console.log(str);
+	connection.query(str, function(error){
+		if(error) throw error;
+		callback();
 	});
 }
 
