@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset="utf-8">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="jingcai.css">
 </head>
 <body style="background-color: #003f74;">
@@ -20,34 +21,42 @@
             </tr>
           </thead>
 					<tbody>
-						{foreach name=gamedata key=date item=match_day from=$myGameData}   <!--foreach($myGameData as $date => $match_day)-->
-						{{assign var=i value=$match_day@total-1}}
-						<tr class="more expanded" id={$more_id[$date]}><td colspan="6">{$date}</td></tr>
-							{foreach name=match_name key=idx item=match from=$match_day}
-								<tr class="moreContent more1">
-									<td><span class="leaguname">{$match['leagueName']}</span> </td>
-									<td><span class="vs"><span class="ht">{$match['ht']}</span>vs<span class="at">{$match['at']}</span></span></td>
-									<td>{$match['time']|date_format:"%H:%M"}</td>
+					{*******************************************************************
+						{foreach from=$myarray key="mykey" item="myitem"}, 
+						$smarty.foreach.name.property
+						這樣的寫法也是可以的，這是smarty2的寫法
+					*******************************************************************}
+						{foreach $myGameData as $date => $match_day}   <!--foreach($myGameData as $date => $match_day)-->
+							{assign var=more value="more"}
+							{assign "moreContent" "moreContent more"}
+							<tr class="more expanded" id="{$more|cat:$match_day@index}" onclick="r({$match_day@index});">
+								<td colspan="6"><span class="moreIcon"></span>{$date} 每次竞猜选择一个选项下注</td>
+							</tr>
+							{foreach $match_day as $match}
+								<tr class="{$moreContent|cat:$match_day@index}">
+									<td><span class="leaguname" style="background-color:{$color[$match.leagueName]}; color: #FFFFFF">{$match.leagueName}</span> </td>
+									<td><span class="vs"><span class="ht">{$match.ht}</span>vs<span class="at">{$match.at}</span></span></td>
+									<td>{$match.time|date_format:"%H:%M"}</td>
 
-									{if $match['rq0'] == "NULL"}
-										<td><span class="rq2">{$match['rq1']}</span></td>
+									{if $match.rq0 == "NULL"}
+										<td><span class="rq2">{$match.rq1}</span></td>
 									{else}
-										<td><span class="rq1">{$match['rq0']}</span><span class="rq2">{$match['rq1']}</span></td>
+										<td><span class="rq1">{$match.rq0}</span><span class="rq2">{$match.rq1}</span></td>
 									{/if}
 
 									{if $match['odds3'] == ''}
-										<td class="odds"><span>{$match['odds0']},</span>
-																		 <span>{$match['odds1']},</span>
-																		 <span>{$match['odds2']}</span></td>
+										<td class="odds"><span>{$match.odds0}</span>
+																		 <span>{$match.odds1}</span>
+																		 <span>{$match.odds2}</span></td>
 									{else}
-										<td class="odds"><span>{$match['odds0']},</span>
-																		 <span>{$match['odds1']},</span>
-																		 <span>{$match['odds2']},</span>
-																		 <span>{$match['odds3']},</span>
-																		 <span>{$match['odds4']},</span>
-																		 <span>{$match['odds5']}</span></td>
+										<td class="odds"><span>{$match.odds0}</span>
+																		 <span>{$match.odds1}</span>
+																		 <span>{$match.odds2}</span>
+																		 <span>{$match.odds3}</span>
+																		 <span>{$match.odds4}</span>
+																		 <span>{$match.odds5}</span></td>
 									{/if}
-									<td style="color:#ed3a37;">{$match['num']}人竞猜</td>
+									<td style="color:#ed3a37;">{$match.num}人竞猜</td>
 								</tr> 
 							{/foreach}
 						{/foreach}
@@ -59,5 +68,14 @@
 </body>
 </html>
 
-
+{literal} 
+	<script language="javascript"> 
+	function r(i) {
+    const str = ".moreContent.more" + i;
+    const idstr = "#more" + i;
+    $(str).slideToggle(0);
+    $(idstr).toggleClass("expanded");
+  }
+	</script>
+{/literal} 
 

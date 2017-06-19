@@ -3,10 +3,10 @@
 	$smarty = new Smarty;
 
   // 設定路徑
-	$smarty->template_dir = 'F:/xampp/htdocs/smarty/templates/';
-	$smarty->compile_dir = 'F:/xampp/htdocs/smarty/templates_c/';
-	$smarty->config_dir = 'F:/xampp/htdocs/smarty/configs/';
-	$smarty->cache_dir = 'F:/xampp/htdocs/smarty/cache/';
+	$smarty->template_dir = 'C:/xampp/htdocs/smarty/templates/';
+	$smarty->compile_dir = 'C:/xampp/htdocs/smarty/templates_c/';
+	$smarty->config_dir = 'C:/xampp/htdocs/smarty/configs/';
+	$smarty->cache_dir = 'C:/xampp/htdocs/smarty/cache/';
 	// echo dirname(__FILE__);
 	// F:\xampp\htdocs\smarty
 
@@ -99,8 +99,8 @@
       preg_match_all("/<td class=\"num\".*?>([\d]+).*?<\/td>/", $value, $num); //num
       $GameData[$date[1][$i-1]][$key]['num'] = $num[1][0];
 
-      // preg_match_all("/<td><span class=\"leagueName\" style='background-color: (.*?);/", $value, $color);
-      // $colorarray[$leagueName[1][0]] = $color[1][0];
+      preg_match_all("/<td><span class=\"leagueName\" style=\"background-color: (.*?);/", $value, $color);
+      $colorarray[$leagueName[1][0]] = $color[1][0];
       //<td><span class="leagueName" style='background-color: #22C126; color: #ffffff'>J2联赛</span></td>
 
       //$GameData['2017-06-03'][0]['leagueName']
@@ -125,6 +125,7 @@
 
   $smarty->assign('myGameData', $GameData);
   $smarty->assign('more_id', $more_id);
+  $smarty->assign('color', $colorarray);
 
   $smarty->display('index.tpl');
 

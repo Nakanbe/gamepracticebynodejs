@@ -2,11 +2,11 @@
   include("dbconnect.php");
   //include("\shared\db.php");
 
-  $conn = db_conn();
+  $conn = gamedb_conn();
   //抓網頁原始碼
   //$url = 'http://www.kufa88.com/Promotion/jingcai';
-  //http://127.0.0.1/source4.html
-  $url = 'http://www.kufa88.com/Promotion/jingcai';
+  // http://127.0.0.1/source4.html
+  $url = 'http://127.0.0.1/source4.html';
   $line_array=file($url);
   $line_string=implode("", $line_array);
   $line_string =str_replace("\n", "", $line_string);
@@ -92,7 +92,7 @@
       preg_match_all("/<td class=\"num\".*?>([\d]+).*?<\/td>/", $value, $num); //num
       $GameData[$date[1][$i-1]][$key]['num'] = $num[1][0];
 
-      preg_match_all("/<td><span class=\"leagueName\" style='background-color: (.*?);/", $value, $color);
+      preg_match_all("/<td><span class=\"leagueName\" style=\"background-color: (.*?);/", $value, $color);
       $colorarray[$leagueName[1][0]] = $color[1][0];
       //<td><span class="leagueName" style='background-color: #22C126; color: #ffffff'>J2联赛</span></td>
     }
@@ -137,7 +137,7 @@
                         bet_ht = '" . $value2['ht'] . "' AND 
                         bet_at = '" . $value2['at'] . "' AND
                         bet_time = '" . $value2['time'] . "'";
-      $result = db_execute($queryselect,$conn); //執行SQL
+      $result = gamedb_execute($queryselect,$conn); //執行SQL
 
       if($row = $result->fetch_array(MYSQLI_ASSOC)){ //當有找到資料時進行比對，沒有時進行INSERT
         if($row['odds0'] != $value2['odds0'] || $row['odds1'] != $value2['odds1'] || $row['odds2'] != $value2['odds2'] ||
@@ -155,7 +155,7 @@
                             bet_num=" . $value2['num'] . "
                           WHERE
                             bet_ID=" . $row['bet_ID'];
-          db_execute($queryupdate,$conn);//執行SQL
+          gamedb_execute($queryupdate,$conn);//執行SQL
         }
       }
       else{
@@ -179,7 +179,7 @@
   }
   $querystr = substr($querystr,0,-1); //去除最後一個逗號
   if($flag == 1){
-    db_execute($querystr,$conn);//執行SQL
+    gamedb_execute($querystr,$conn);//執行SQL
   }
 
   //印出TABLE
@@ -187,12 +187,16 @@
   $todaydate = ""; //今天日期
   $changedate = 1;
   //選擇要顯示出來的比賽
+  // $queryoutput = 'SELECT * 
+  //                 FROM betgame 
+  //                 WHERE (bet_date="' . date('Y-m-d') . '" AND bet_time>"' . date('H:i:s') . '") OR ' . 
+  //                       'bet_date>"' . date('Y-m-d') . '" 
+  //                 ORDER BY bet_date ASC, bet_time ASC';
   $queryoutput = 'SELECT * 
                   FROM betgame 
-                  WHERE (bet_date="' . date('Y-m-d') . '" AND bet_time>"' . date('H:i:s') . '") OR ' . 
-                        'bet_date>"' . date('Y-m-d') . '" 
+                  WHERE (bet_date>="2017-05-09" AND bet_date<="2017-05-11") 
                   ORDER BY bet_date ASC, bet_time ASC';
-  $result = db_execute($queryoutput,$conn);//執行SQL
+  $result = gamedb_execute($queryoutput,$conn);//執行SQL
   $outputstr = "<table class='gametable'>
                   <thead>
                     <tr>
@@ -270,7 +274,7 @@
   //   </tbody>
   // </table>
   // echo $outputstr;
-  db_close($conn);//執行SQL
+  gamedb_close($conn);//執行SQL
 
 ?>
 <!DOCTYPE html>
