@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="jingcai.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="http://127.0.0.1:8001/socket.io/socket.io.js"></script>
+    <!-- <script src="http://127.0.0.1:8001/socket.io/socket.io.js"></script> -->
+    <script src="socket.io/socket.io.js"></script>
   </head>
 <body style="background-color: #003f74;">
   <div class="content">
     <div>
       <div class="contentWrap">
-        <form id="searchform">
+        <form id="searchform" name="searchform">
           <span class="startend">
             起：<input type="date" name="search_start_date" ></input>
             迄：<input type="date" name="search_end_date"></input>
@@ -36,7 +37,15 @@
               <option value="解放者杯">解放者杯</option>
               <option value="巴西杯">巴西杯</option>
               <option value="亚洲杯预">亚洲杯预</option>
-              <option value="美公开杯">美公开杯</option> 
+              <option value="美公开杯">美公开杯</option>
+              <option value="美职">美职</option> 
+              <option value="南优胜杯">南优胜杯</option> 
+              <option value="欧青赛">欧青赛</option> 
+              <option value="阿甲">阿甲</option> 
+              <option value="K联赛">K联赛</option> 
+              <option value="J联赛">J联赛</option>  
+              <option value="联合会杯">联合会杯</option>  
+              <option value="挪超">挪超</option>  
             </select>
           </span>
           
@@ -45,7 +54,7 @@
         <form action="gameanaly.php">
           <input type="button" id="analybtn" value="分析" onclick="analyGame();"></input>
         </form>
-        <div id="loadingIMG" style="display:none"><img src="loading128.gif" />資料處理中，請稍後。</div>
+        <div id="loading" style="display:none"><img id="loadingIMG" src="a4f2cb80ff2ae2772e80bf30e9d78d4c.gif" />資料處理中，請稍後。</div>
         <table class='gametable' id='gametable'></table>
       </div>
     </div>
@@ -56,17 +65,38 @@
 <script>
 
   var socket = io.connect('http://127.0.0.1:8001');
-  socket.on('connect', function(){
+
+  // socket.on('connect_error', function(){
+  //   alert("連線失敗，請按F5!");
+  // });
+
+  $(document).ready(function() {
+    first(); 
+  });
+
+  function first(){
+    $('#loading').show();
+    const d1 = new Date();
+    var month = d1.getMonth()+1; // getMonth() 0~11 所以要加1
+    var date = d1.getDate();
+    if(month < 10){  //補0
+      month = "0" + month;
+    }
+    if(date < 10){  //補0
+      date = "0" + date;
+    }
+    var daystr = d1.getFullYear() + "-" + month + "-" + date;
     socket.emit('search_condition',
-      { 'start_date': '2017-06-13',
-        'end_date': '2117-06-14',
-        'leaguname': '',
-        'ht': '',
-        'at': ''});
-    socket.on('result', function(data){
+    { 'start_date': daystr,
+      'end_date': '2117-06-14',
+      'leaguname': '',
+      'ht': '',
+      'at': ''});
+    socket.on('first_result', function(data){
+      console.log(data);
       output(data);
     });
-  });
+  }
 
   function r(i) {
     const str = ".moreContent.more" + i;
@@ -94,7 +124,15 @@
                     南优胜杯: '#c5aa44',
                     巴西杯: '#006633',
                     亚洲杯预: '#37BE5A',
-                    美公开杯: '#B00900'};
+                    美公开杯: '#B00900',
+                    欧青赛: '#1b5a89',
+                    阿甲: '#0CB9E4',
+                    K联赛: '#15DBAE',
+                    J联赛: '#009900',
+                    联合会杯: '#FF9900',
+                    挪超: '#CC631D'};
+
+                    // <span class="leagueName" style="background-color: #CC631D; color: #FFFFFF">挪超</span>
 
     var gametable = "<thead><tr><th width='100'>賽事</th><th width='200'>&nbsp;&nbsp;主隊&nbsp;&nbsp;&nbsp;vs&nbsp;&nbsp;&nbsp;客隊&nbsp;&nbsp;</th><th width='80'>截止</th><th>讓球</th><th width='300'>主勝&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;平局&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;客勝</th><th width='150'>競猜人數</th></tr></thead>";
     var i = 0, change = 1, statuskey = "", str = "", rqcolor = "";
@@ -152,4 +190,38 @@
     gametable += " </tbody>";
     document.getElementById('gametable').innerHTML = gametable;
   }
+
+  function searchGame(){
+    $('#loading').show();
+    socket.emit('search_condition',
+    { 'start_date': document.forms['searchform']['search_start_date'].value,
+      'end_date': document.forms['searchform']['search_end_date'].value,
+      'leaguname': document.forms['searchform']['search_leaguname'].value,
+      'ht': document.forms['searchform']['search_ht'].value,
+      'at': document.forms['searchform']['search_at'].value}); 
+  }
+
+  function analyGame(){
+    $('#loading').show();
+    socket.emit('analy');
+  }
+
+  socket.on('result', function(data){  //收到回傳的資料
+    $('#loading').hide();
+    if(data == 'no_search_condition'){
+      alert('請輸入搜尋條件');
+    }
+    else if(data == 'no_insert_or_update'){
+      alert('沒有需要新增或更新的資料');
+      output('');
+    }
+    else if(data == 'no_search_result'){
+      alert('沒有符合的資料');
+      output('');
+    }
+    else{
+      output(data);
+    }
+    console.log(data);
+  });
 </script>
