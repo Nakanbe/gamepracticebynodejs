@@ -1,0 +1,142 @@
+body {
+	font-family: "Arial","microsoft yahei","Helvetica";
+}
+
+table, th, td{
+	border-collapse: collapse;
+}
+thead th{
+  background-color: #0a81d7;
+  font-weight: normal;
+  height: 35px;
+  color: #fff;
+  border-right: 1px solid #006fc0;
+}
+.content {
+	width: 960px;
+  height: auto;
+  margin: 0 auto;
+  clear: both;
+  padding-bottom: 30px;
+  position: relative;
+}
+.contentWrap {
+  width: 930px;
+  background: #b6dfff;
+  padding: 15px;
+  height: auto;
+  margin: 15px auto 0;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.contentWrap .startend{
+  width: 180px;
+  display: inline-block;
+  margin: 0px 0px 3px 0px;
+}
+.contentWrap .htat{
+  width: 240px;
+  display: inline-block;
+  margin: 0px 0px 3px 0px;
+}
+.contentWrap .choosematch{
+  width: 100px;
+  display: inline-block;
+  margin: 0px 0px 3px 0px;
+}
+.contentWrap #searchform{
+  width: 800px;
+}
+
+.gametable {
+	width: 100%;
+  font-size: 16px;
+  margin: 10px 0 0 0;
+}
+.gametable tbody tr {
+  border: 1px solid #dbdbdb;
+}
+.gametable tr.more td {
+  background-color: #eef8ff;
+  height: 35px;
+  color: #004478;
+  cursor: pointer;
+}
+.more.expanded .moreIcon {
+  width: 19px;
+  height: 11px;
+  background: url(more.png) center 0 no-repeat;
+  display: inline-block;
+  margin: 0 10px;
+}
+.moreIcon {
+  width: 11px;
+  height: 18px;
+  background: url(morel.png) center 0 no-repeat;
+  display: inline-block;
+  margin: 0 10px;
+}
+/*input#searchbtn{
+  background-color: blue;
+  border: none;
+  color: white;
+  padding: 10px 32px;
+  cursor: pointer;
+  font-size: 40px;
+  border-radius: 30px;
+  font-family: "microsoft yahei";
+}*/
+.gametable tr.moreContent td.odds span{
+	width: 65px;
+  text-align: center;
+  background: #b6dfff;
+  padding: 6px 12px;
+  color: #0a81d7;
+  margin: 3px 4px 0 0;
+  border-radius: 3px;
+  display: inline-block;
+}
+.leaguname {
+  display: inline-block;
+  padding: 3px 0;
+  border-radius: 3px; 
+  width: 83px;
+  text-align: center;
+}
+.gametable tr.moreContent td {
+  background-color: #ffffff;
+  height: 80px;
+  color: #0a81d7;
+  text-align: center;
+ }
+
+.vs {
+  width: 20px;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  margin: 0 auto;
+}
+.vs .ht {
+  text-align: center;
+  left: -90px;
+}
+.vs .at {
+  text-align: center;
+  left: 10px;
+}
+.vs .ht, .vs .at {
+  position: absolute;
+  width: 100px;
+}
+.rq1, .rq2 {
+  display: inline-block;
+  width: 100%;
+  height: 35px;
+  line-height: 35px;
+}
+
+#loadingIMG{
+  height: 128px;
+  width: 128px;
+}

@@ -54,8 +54,8 @@ server_io.sockets.on('connection', function(socket){
 });
 
 function analypage(callback){
-	// var page = 'http://www.kufa88.com/Promotion/jingcai';
-	var page = 'http://127.0.0.1/source4.html';
+	var page = 'http://www.kufa88.com/Promotion/jingcai';
+	// var page = 'http://127.0.0.1/source4.html';
 	console.log ('visiting page' + page);
 	var GameData = {};  //存放所有抓到的資料
 	request(page, function(error, response, body){
@@ -147,7 +147,18 @@ var flag = 0;
 var queryinsert = "INSERT INTO betgame (bet_date, bet_leaguname, bet_ht, bet_at, bet_time, bet_rq0, bet_rq1, bet_odds0, bet_odds1, bet_odds2, bet_odds3, bet_odds4, bet_odds5, bet_num) VALUES ";
 var insertGameJSON = [];  //用來放新增的資料
 var updateGameJSON = [];  //用來放更新的資料
+/*
+analypage
+checksql
 
+analypage(function() {
+	checksql(function(ins) {
+		query(,function() {
+			socket.emit()
+		})
+	})
+})
+*/
 function checksql(connection, callback){
 	analypage(function(GameData){
 		var j = 0;  //用來比對資料的INDEX
