@@ -145,13 +145,89 @@
 //{"C":{"C1":"c1","C2":"c2"}}
 //--------------------------------------------------------
 
-function add(a,b, callback){
-	for(var i = 0; i < 10; i++){
-		c = a+b;
-		callback(i);
-	}
-}
+// function add(a,b, callback){
+// 	for(var i = 0; i < 10; i++){
+// 		c = a+b;
+// 		callback(i);
+// 	}
+// }
 
-add(1,2,function(i){
-	console.log(i);
-});
+// add(1,2,function(i){
+// 	console.log(i);
+// });
+
+//---------------------------------------------------------
+
+// console.log(n3(5));
+// var sum = 0;
+
+// function n3(n, callback){
+// 	if(n === 1 || n < -1){
+// 		console.log(n+"1");
+// 		callback(1);
+// 	}
+// 	else{
+// 		console.log("n"+n);
+// 		n3(n-1, function(i){
+// 			console.log(i);
+// 			sum +=i;
+// 		});
+// 	}
+// }
+
+//------------------------------------------------------------
+
+// var obj = [{a: 'a1', b: 'b1'}, {a: 'a2', b: 'b2'}];
+// if(obj[3]['c']){
+// 	console.log('HAVE C');
+// }
+// else{
+// 	console.log("NO C");
+// }
+// //ReferenceError: c is not defined
+// if(obj[1]['a']){
+// 	console.log(obj[1]['a']);
+// }
+// else{
+// 	console.log("HAHA");
+// }
+//------------------------------------------------------------------
+
+// function a(callback){
+// 	a = 1+1;
+// 	if(){
+// 		a(function(){
+// 			callback();
+// 		});
+// 	}
+// 	else{
+// 		callback();	
+// 	}
+// }
+
+// a();
+
+// function b(callback){
+// 	...
+// 	callback();
+// }
+// b(function(){
+// 	b(function(){
+// 		b(function(){
+// 			b(function(){
+// 				b(function(){
+
+// 				});
+// 			});
+// 		});
+// 	});
+// });
+
+//-------------------------------------------------------------------
+
+// let str = 'HEllo WoRlD!';
+
+// for( value of str){
+// 	console.log(value );
+// }
+//------------------------------------------------------------------
