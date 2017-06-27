@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>This is Vue 4</title>
+  <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+	<div id="example">
+		<my-com></my-com>	
+	</div>
+	<div id="example2">
+		<my-com2></my-com2>
+	</div>
+	<div id="example3">
+		<input type="checkbox" id="Apple" value="Apple" v-model="Names"><label for="Apple">Apple</label>
+		<input type="checkbox" id="Banana" value="Banana" v-model="Names">Banana
+		<span>Fruits: {{ Names }}</span>
+		<h1 v-show="ok">{{ok?'true':'false'}}</h1>
+	</div>
+</body>
+</html>
+<script src="vue4.js"></script>
+   

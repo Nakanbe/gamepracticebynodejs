@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/vue"></script>
+  <title>This is Vue</title>
+</head>
+
+<body>
+  <div id="app" v-cloak>  <!-- v-cloak: The <div> will not be visible until the compilation is done. -->
+    <label>Name:</label>
+    <input type="text" v-model="yourName" placeholder="Enter a name here">
+    <hr>
+    <h1>This is {{yourName}}!</h1>
+  </div>
+</body>
+
+</html>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      yourName: ''
+    }
+  })
+</script>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>This is Vue 3</title>
+  <script src="https://unpkg.com/vue"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    #app {
+      background-color: #f5f5f5;
+      width: 400px;
+      border-radius: 10px;
+      border: 2px solid #dddddd;
+    }
+    .center {
+      text-align: center;
+    }
+    table {
+      margin: auto;
+      border-radius: 4px;
+    }
+    table,th,td {
+      border: 1px solid #999999;
+    }
+    .blue {
+      color: #0088cc;
+    }
+    .blue:hover {
+      cursor: pointer;
+      color: #aaaa00;
+    }
+    .addBlock {
+      margin: auto;
+      border-radius: 4px;      
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2 class="center">JavaScript Projects</h2>
+    
+    <div v-if="showList">
+      <p class="center">
+        <input type="text" v-model="searchWord" id="projects_search" placeholder="Search">
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Description</th>
+            <th class="center" colspan="2"><a @click="goShow('new')"><i class="material-icons blue">add_circle_outline</i></a></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(p, i) in filterKeyword">
+            <td><a v-bind:href="p.site" target="_blank">{{p.name}}</a></td>
+            <td>{{p.description}}</td>
+            <td>
+              <a @click="delProject(p)"><i class="material-icons blue">clear</i></a>
+            </td>
+            <td>
+              <a @click="editProject(p,i)"><i class="material-icons blue">create</i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="addBlock" v-if="showAdd">
+      <table>
+        <tr>
+          <td>Name</td>
+          <td><input type="text" v-model="newPj.name"></td>
+        </tr>
+        <tr>
+          <td>Website</td>
+          <td><input type="text" v-model="newPj.site"></td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td><input type="text" v-model="newPj.description"></td>
+        </tr>
+        <tr>
+          <td colspan="2" class="center">
+            <button type="button" @click="goShow('list')">Cancel</button>
+            <button type="button" @click="addProject()">Save</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="addBlock" v-if="showEdit">
+      <table>
+        <tr>
+          <td>Name</td>
+          <td><input type="text" v-model="editPj.name"></td>
+        </tr>
+        <tr>
+          <td>Website</td>
+          <td><input type="text" v-model="editPj.site"></td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td><input type="text" v-model="editPj.description"></td>
+        </tr>
+        <tr>
+          <td colspan="2" class="center">
+            <button type="button" @click="goShow('list')">Cancel</button>
+            <button type="button" @click="saveProject()">Save</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+    
+    
+    <p></p>
+  </div>
+  
+</body>
+
+</html>
+
+<script src="vue3.js"></script>
+   

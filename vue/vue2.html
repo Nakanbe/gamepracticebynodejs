@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/vue"></script>
+  <link rel="stylesheet" href="vue2.css">
+  <title>This is Vue 2</title>
+</head>
+
+<body>
+  <div id="app">
+    <h2>Fruit</h2>
+    {{ remaining }} of {{ fruit.length }} remaining <button @click="removeFruit()">remove</button>
+    <ul>
+      <li v-for="f in fruit">
+        <label>
+          <input type="checkbox" v-model="f.done">
+          <span v-bind:class="{ 'done-true': f.done, 'done-false': !f.done }">{{f.text}}</span>
+        </label>
+      </li>
+    </ul>
+    
+    <form @submit.prevent="addFruit">  <!-- prevent->提交表單不重載頁面 -->
+      <input v-model="newInput">
+      <button>add</button>
+    </form>
+  </div>
+</body>
+
+</html>
+
+<script src="vue2.js"></script>
+
+   
