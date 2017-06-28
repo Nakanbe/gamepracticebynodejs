@@ -1,0 +1,68 @@
+<html>
+<head>  
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+  <input type="text" id="search_data"></input>
+  <input type="button" onclick="search()" value="click"></input>
+  <p id="result"><p>
+</body>
+</html>
+
+<script>
+  function search(){
+    var searchdata = document.getElementById("search_data").value; 
+    document.getElementById("result").innerHTML = "";
+    $.ajax({
+      type: "GET",
+      url: "http://127.0.0.1/cdict/cdict.php",
+      data: {q: searchdata},
+      success: function(data){
+        output(data);
+      }
+    });
+  }
+  
+  function output(data){
+    //抓取資料
+    data = data.replace(/(\r\n|\n|\r)/gm,"");  //移除換行
+    var cdict_regex = /<pre>.*?<\/pre>/g;  
+    var cdict_result = cdict_regex.exec(data);
+    
+    var str = "";
+    var target_regex = /來源.*?<span class=source>/g;
+    while(target_result = target_regex.exec(cdict_result[0])){
+      if(target_result[0].match("pydict data")){
+        str += target_result[0] + "<br>";
+      }
+      else if(target_result[0].match("The Collaborative International Dictionary")){
+        str += target_result[0] + "<br>";
+      }
+      else if(target_result[0].match(/WordNet \(r\)/)){
+        str += target_result[0] + "<br>";
+      }
+    }
+    
+    var last_regex = /.*(來源.*?)<\/pre>/g;
+    while(last_result = last_regex.exec(cdict_result[0])){
+      if(last_result[1].match("pydict data")){
+        str += last_result[1] + "<br>";
+      }
+      else if(last_result[1].match("The Collaborative International Dictionary")){
+        str += last_result[1] + "<br>";
+      }
+      else if(last_result[1].match(/WordNet \(r\)/)){
+        str += last_result[1] + "<br>";
+      }
+    }
+
+    if(str == ""){
+      alert("找不到相關資料");
+    }
+    else{
+      document.getElementById("result").innerHTML = str;
+    }
+  }
+  
+</script>
