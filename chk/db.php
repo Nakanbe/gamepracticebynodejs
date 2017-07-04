@@ -1,8 +1,10 @@
 <?php
   header('Content-Type: application/json; charset=UTF-8');
   $servername = "127.0.0.1";
-  $username = "jingcai";
-  $password = "kufa88";
+  // $username = "jingcai";
+  // $password = "kufa88";
+  $username = "root";
+  $password = "admin";
   $dbname = "t1";
   
   $conn = new mysqli($servername, $username, $password, $dbname);
