@@ -159,12 +159,12 @@
   }
   
   function output(data, webid, gametype){
-    let outTable = document.getElementById('show');
+    var outTable = document.getElementById('show');
     outTable.innerHTML = temp;  //每次都先回到最初狀況
-    for(let i = 0; i < data.length; i++){
-      let str = ''
+    for(var i = 0; i < data.length; i++){
+      var str = ''
       str = '<td><select id="web'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
-      for(let key in webid_arr){  //option用loop印出來
+      for(var key in webid_arr){  //option用loop印出來
         if(webid == key){  //被選擇的選項要是 selected
           str += '<option value="'+key+'" selected> '+webid_arr[key]+' </option>';
         }
@@ -175,7 +175,7 @@
       str += '</select></td>';
      
       str += '<td><select id="sport'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
-      for(let key in gtype){  //option用loop印出來
+      for(var key in gtype){  //option用loop印出來
         if(gametype == key){  //被選擇的選項要是 selected
           str += '<option value="'+key+'" selected> '+gtype[key]+' </option>';
         }
