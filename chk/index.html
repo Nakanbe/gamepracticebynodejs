@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <title>chk</title>
+</head>
+<body>
+  <div>
+    <table border=1 style="text-align:center;" id="show">
+      <thead>
+        <tr>
+          <td>站台</td>
+          <td>球種下拉式選單</td>
+          <td>開賽時間（start_dt+start_time）</td>
+          <td>內容（聯盟中文名稱<br>主隊中文名稱 VS 客隊中文名稱</td>
+          <td>比分（主 VS 客）</td>
+          <td>功能</td>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
+
+<script>
+  let temp;
+   
+  $(document).ready(function(){
+    first();
+    temp = gettemp();  //取得一開始 table 的 html
+  });
+  
+  function gettemp(){
+    return document.getElementById('show').innerHTML;
+  }
+  
+  const webid_arr = {
+    '1': 'sportslottery',
+    '2': 'jingcai',
+    '3': '7sport',
+    '4': '8betsport',
+    '5': 'foot-bet-9',
+    '6': 'foot-bet-10',
+    '7': 'bedminton-11',
+    '8': 'bedminton-12'
+  }
+  
+  const gtype = {
+    "BS":"美棒",
+    "BK":"籃球",
+    "FT":"足球",
+    "CB":"中華職棒",
+    "KB":"其他棒球",
+    "JB":"日棒",
+    "AF":"美足",
+    "IB":"冰球",
+    "LO":"彩球",
+    "ST":"指數",
+    "WB":"其他籃球",
+    "EB":"電競",
+    "EK":"國際籃球",
+    "EF":"國際足球",
+    "TN":"網球",
+    "VB":"排球",
+    "PO":"板球",
+    "HB":"手球",
+    "BM":"羽毛球",
+    "BL":"撞球",
+    "GD":"賽馬/賽狗"
+  }
+
+  //第一次進入網站
+  function first(){
+    $.ajax({
+      type: 'POST',
+      url: 'db.php',
+      data: {
+        webid: '1',
+        gametype: 'BS'
+      },
+      datatype: 'JSON',
+      success: function(data){
+        output(data, '1', 'BS');
+      }
+    });
+  }
+  
+  //當下拉式選單有改變時，會觸發這個函式，i代表第幾個欄位的下拉式選單被改變，i從0開始數
+  function getData(gameid, i){
+    var webid = document.getElementById("web"+i).value;
+    var gametype = document.getElementById("sport"+i).value;
+    $.ajax({
+      type: 'POST',
+      url: 'db.php',
+      data: {
+        gameid: gameid,
+        webid: webid,
+        gametype: gametype
+      },
+      datatype: 'JSON',
+      success: function(data){
+        output(data, webid, gametype);
+      }
+    });
+  }
+  
+  function output2(data, webid, gametype){
+    let outTable = document.getElementById('show');
+    outTable.innerHTML = temp;  //每次都先回到最初狀況
+    for(let i = 0; i < data.length; i++){
+      let row = outTable.insertRow(i+1);
+      let cell1 = row.insertCell(0);
+      let str = ''
+      str = '<td><select id="web'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
+      for(let key in webid_arr){  //option用loop印出來
+        if(webid == key){  //被選擇的選項要是 selected
+          str += '<option value="'+key+'" selected> '+webid_arr[key]+' </option>';
+        }
+        else{
+          str += '<option value="'+key+'"> '+webid_arr[key]+' </option>';
+        }
+      }
+      str += '</select></td>';
+      cell1.innerHTML = str;
+      
+      let cell2 = row.insertCell(1);
+      str = '<td><select id="sport'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
+      for(let key in gtype){  //option用loop印出來
+        if(gametype == key){  //被選擇的選項要是 selected
+          str += '<option value="'+key+'" selected> '+gtype[key]+' </option>';
+        }
+        else{
+          str += '<option value="'+key+'"> '+gtype[key]+' </option>';
+        }
+      }
+      str += '</select></td>';
+      cell2.innerHTML = str;
+      
+      let cell3 = row.insertCell(2);
+      let cell4 = row.insertCell(3);
+      let cell5 = row.insertCell(4);
+      let cell6 = row.insertCell(5);
+      if(data[0] == "NO DATA"){  //當抓不到資料時會回傳 data[0] = "NO DATA" 過來
+        cell3.innerHTML = '<td></td>';
+        cell4.innerHTML = '<td></td>';
+        cell5.innerHTML = '<td></td>';
+        cell6.innerHTML = '<td></td>';
+      }
+      else{ 
+        cell3.innerHTML = '<td>' + data[i]['date_time'] + '</td>';  
+        cell4.innerHTML = '<td>' + data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'] + '</td>';
+        cell5.innerHTML = '<td>' + data[i]['home_s'] + ':' + data[i]['cust_s'] + '</td>';
+        cell6.innerHTML = '<td><input type="button" value="刪除" onclick="getData('+ data[i]['game_id']+','+ i +')"></td>';  //del 裡放的是這個比賽的game_id , i代表第幾個row，從0開始數
+      }
+    }
+  }
+  
+  function output(data, webid, gametype){
+    let outTable = document.getElementById('show');
+    outTable.innerHTML = temp;  //每次都先回到最初狀況
+    for(let i = 0; i < data.length; i++){
+      let str = ''
+      str = '<td><select id="web'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
+      for(let key in webid_arr){  //option用loop印出來
+        if(webid == key){  //被選擇的選項要是 selected
+          str += '<option value="'+key+'" selected> '+webid_arr[key]+' </option>';
+        }
+        else{
+          str += '<option value="'+key+'"> '+webid_arr[key]+' </option>';
+        }
+      }
+      str += '</select></td>';
+     
+      str += '<td><select id="sport'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
+      for(let key in gtype){  //option用loop印出來
+        if(gametype == key){  //被選擇的選項要是 selected
+          str += '<option value="'+key+'" selected> '+gtype[key]+' </option>';
+        }
+        else{
+          str += '<option value="'+key+'"> '+gtype[key]+' </option>';
+        }
+      }
+      str += '</select></td>';
+      
+
+      if(data[0] == "NO DATA"){  //當抓不到資料時會回傳 data[0] = "NO DATA" 過來
+        str += '<td></td><td></td><td></td><td></td>';
+      }
+      else{ 
+        str += '<td>' + data[i]['date_time'] + '</td>';  
+        str += '<td>' + data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'] + '</td>';
+        str += '<td>' + data[i]['home_s'] + ':' + data[i]['cust_s'] + '</td>';
+        str += '<td><input type="button" value="刪除" onclick="getData('+ data[i]['game_id']+','+ i +')"></td>';  //del 裡放的是這個比賽的game_id , i代表第幾個row，從0開始數
+      }
+      
+      $('#show tbody').append('<tr>'+str+'</tr>');
+    }
+  }
+  
+</script>

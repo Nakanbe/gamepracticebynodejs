@@ -4,21 +4,175 @@
   <meta charset="UTF-8">
   <title>This is Vue 4</title>
   <script src="https://unpkg.com/vue"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .bg {
+      background-color: #77ccff;
+    }
+    .bg2 {
+      background-color: #77ffff;
+    }
+    table,th,td {
+      border: 1px solid #999999;
+    }
+    .blue {
+      color: #0088cc;
+    }
+    .blue:hover {
+      cursor: pointer;
+      color: #FF0000;
+    }
+  </style>
 </head>
 <body>
-	<div id="example">
-		<my-com></my-com>	
+	<div id="example6">
+
 	</div>
-	<div id="example2">
+	<div id="example7">
 		<my-com2></my-com2>
 	</div>
-	<div id="example3">
+	<div id="example8">
 		<input type="checkbox" id="Apple" value="Apple" v-model="Names"><label for="Apple">Apple</label>
 		<input type="checkbox" id="Banana" value="Banana" v-model="Names">Banana
-		<span>Fruits: {{ Names }}</span>
-		<h1 v-show="ok">{{ok?'true':'false'}}</h1>
+		<br><span>Fruits: {{ Names }}</span>
+		{{Wine[0]=="beer"?ok = true:ok = false}}
+		<h1 v-show="ok">THis is apple</h1>
+		<button v-on:click = "plus"><simple-counter :message2="counter"></simple-counter></button>
+		<button v-on:click = "plus"><simple-counter :message2="counter"></simple-counter></button>
+		<button v-on:click = "plus"><simple-counter :message2="counter"></simple-counter></button> 
 	</div>
+  <div id="example9">
+    {{time}}
+  </div>
+  <div id="example10">
+    <a :href="url">Google</a>
+    <p>SHOW</p>
+  </div>
+  <div id="example11">
+    <template v-if="seen">
+      <p>{{message}}</p>
+      <p>{{timecounter}}</p>
+    </template>
+  </div>
+  <div id="example12">
+    <ul>
+      <li v-for="value, index in shape">{{value}} + {{index}}</li>
+    </ul>
+    <ol>
+      <li v-for="value, key, index in phone">{{value}} + {{key}} + {{index}}</li>
+    </ol>
+    <ul>
+      <li v-for="value, index, key in WTFphone">{{value}} + {{index}} + {{key}}</li>
+    </ul>
+  </div>
+  <div id="example13">
+    {{message | upperletter | abbreviation}}
+  </div>
+  <div id="example14">
+    <p>你點了 {{count}} 次 <span v-show="show">{{info}}</span></p>
+    <span v-show="show">{{info}}</span>
+    <button v-on:click="increase">click!</button>
+    <input @keyup.65="disword" @keyup.delete="delword"></input>
+    <p>{{word}}</p>
+  </div>
+  <div id="example15">
+    <input v-model="txt"></input>
+    <p>{{txt}}</p>
+    <input v-model.lazy="txt2"></input><span>lazy</span>
+    <p>{{txt2}}</p>
+    <input v-model.number="txt3"></input><span>number</span>
+    <p>{{txt3}}</p>
+    <input v-model.trim="txt4"></input><span>trim</span>
+    <p>{{txt4}}</p>
+  </div>
+  <div id="example16">
+    <select v-model="characters" multiple>
+      <option>Miss Fortune</option>
+      <option>Akali</option>
+      <option>Caitlyn</option>
+    </select>
+    <p> You Choose </p>
+    <ul>
+      <li v-for="c in characters">{{c}}</li>
+    </ul>
+  </div>
+  <div id="example17">
+    <select v-model="character" mutiple>
+      <option v-for="c in characters" :value="c.value">{{c.text}}</option>
+    </select>
+    <p> You Choose </p>
+    {{character}}
+  </div>
+  <div id="example18">
+    <div :class="{bg: isshowBG, bg2: !isshowBG}">Hello Vuejs</div>
+  </div>
+  <div id="example19">
+  </div>
+  <div id="example20">
+    <pre>parent: {{pmsg}}</pre>
+    <e20-com :cmsg="pmsg"></e20-com>
+    <input v-model="pmsg"></input>  
+  </div>
+  <div id="example21"> <!--有問題 請看example23-->
+    <pre>Parent: {{pmsg}}</pre>
+    <e21-com :cmsg="pmsg" v-model="pmsg"></e21-com>
+  </div>
+  <div id="example22">
+    <p>{{msg}}</p>
+    <input v-bind:value="msg" v-on:input="msg = $event.target.value"></input>
+  </div>
+  <div id="example23">
+    <pre>Parent: {{msg}}</pre>
+    <e23-com :cmsg="msg" v-on:getvalue="displayvalue"></e23-com>  <!--因為後面一定要是methods-->
+  </div>
+  <div id="example24">  <!--v-model的另一種寫法-->
+    <p>{{msg}}</p>
+    <!--  v-bind給輸入框賦值
+          v-on改變msg         -->
+    <input :value="msg" @input="msg = $event.target.value"></input>
+  </div>
+  <!--slot-->
+  <div id="example25">
+    <p>開始</p>
+    <e25-com>
+      <p slot="section1">這是第一行</p>
+      <p>再來啊</p>
+      <p slot="section2">這是第三行</p>  
+    </e25-com>
+  </div>
+  <!--<component :is>-->
+  <div id="example26">
+    <button @click="gotofloor('upstair')">上樓</button>
+    <button @click="gotofloor('downstair')">下樓</button>
+    <button @click="gotofloor('goout')">出門</button>
+    <compnent :is="currentfloor"></compnent>
+  </div>
+  <!--template for-->
+  <div id="example27">
+    <e27-com :pro="projects"></e27-com>  
+  </div>
+  <!--改寫vue3-->
+  <div id="example28">
+    <p class="center">
+      <input type="text" v-model="searchWord" id="projects_search" placeholder="Search">
+    </p>
+    <component
+      :isadd="is_add"
+      :idx="idx"
+      :is="currentTable" 
+      :pro="filterKeyword" 
+      @get_show="goShow">
+    </component>
+  </div>
+  <!--v-model and computed-->
+  <div id="example29">
+    <input v-model="num"></input>
+    <p> {{num}} </p>
+    <p> {{calc}} </p>
+    <input v-model="msg"></input>
+    <p> {{msg}} </p>
+    <p> {{reversenum}} </p>
+  </div>
 </body>
 </html>
 <script src="vue4.js"></script>
-   

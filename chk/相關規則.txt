@@ -1,0 +1,54 @@
+﻿相關TABLE有六個：
+1.game（賽事列表）
+2.gamer（賽事列表）
+3.web（站台對應名稱）
+4.league（聯盟對應名稱）
+5.team（隊伍對應名稱）
+6.chkSetResult（確認是否已刪除）
+
+相關對應如下
+gamer
+game_id		=>	game->id
+webid		=>	web->id
+
+game
+league_id	=>	league->id
+home_team	=>	team->id
+cust_team	=>	team->id
+
+
+gamer->gtype（球種）對應如下：
+"BS"=>"美棒"
+"BK"=>"籃球"
+"FT"=>"足球"
+"CB"=>"中華職棒"
+"KB"=>"其他棒球"
+"JB"=>"日棒"
+"AF"=>"美足"
+"IB"=>"冰球"
+"LO"=>"彩球"
+"ST"=>"指數"
+"WB"=>"其他籃球"
+"EB"=>"電競"
+"EK"=>"國際籃球"
+"EF"=>"國際足球"
+"TN"=>"網球"
+"VB"=>"排球"
+"PO"=>"板球"
+"HB"=>"手球"
+"BM"=>"羽毛球"
+"BL"=>"撞球"
+"GD"=>"賽馬/賽狗"
+
+
+需求：
+1.網頁開啟後，從gamer 撈 開賽時間（start_dt+start_time）>現在時間，而且符合下拉式選單的條件、game_over='Y'、主客比分>=-1、不在chkSetResult資料表裡（用game_id作關聯），顯示在頁面上
+2.按下刪除後，需把該場賽事的game_id新增到chkSetResult資料表，代表不用顯示在頁面上了
+
+備註：開賽時間在DB裡呈現是-12小時，例如開賽時間是2017-06-30 18:00:00，在DB裡是儲存為2017-06-30 06:00:00，所以在查詢跟顯示時需注意這點
+現在時間減12小時再從資料庫撈資料撈完再加12小時回去
+
+1.只要一個select
+2.table不要每次都重畫 修改內容就好了
+3.first不要寫死
+4.first寫在onload
