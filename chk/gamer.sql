@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機: 127.0.0.1
--- 產生時間： 2017-07-04 12:23:05
+-- 產生時間： 2017-07-05 11:42:00
 -- 伺服器版本: 10.1.22-MariaDB
 -- PHP 版本： 7.1.4
 
@@ -71,7 +71,13 @@ INSERT INTO `gamer` (`id`, `webid`, `web_game_id`, `ms`, `gtype`, `strong`, `run
 (9, 1, 456, 'UP', 'FT', 'S', 'N', 9, 'N', '2017-07-04 00:00:00', NULL, NULL, 0, 0, '2017-07-04 00:00:00', '2017-07-11', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
 (10, 2, 58, 'UP', 'FT', 'S', 'N', 10, 'N', '2017-07-05 00:00:00', NULL, NULL, 3, 2, NULL, '2017-07-08', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
 (11, 5, 565, 'UP', 'FT', 'S', 'N', 11, 'N', '2017-07-02 00:00:00', NULL, NULL, 1, 2, NULL, '2017-07-15', '00:04:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
-(12, 6, 468, 'UP', 'FT', 'S', 'N', 12, 'N', '2017-07-06 00:00:00', NULL, NULL, -2, 0, NULL, '2017-07-15', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL);
+(12, 6, 468, 'UP', 'FT', 'S', 'N', 12, 'N', '2017-07-06 00:00:00', NULL, NULL, -2, 0, NULL, '2017-07-15', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(13, 1, 456, 'UP', 'BS', 'S', 'N', 13, 'N', '2017-07-05 00:00:00', NULL, NULL, 1, 2, NULL, '2017-07-05', '08:30:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(14, 1, 462, 'UP', 'BS', 'S', 'N', 14, 'N', '2017-07-04 00:00:00', NULL, NULL, 4, 3, NULL, '2017-07-05', '09:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(15, 1, 458, 'UP', 'BS', 'S', 'N', 15, 'N', '2017-07-01 00:00:00', NULL, NULL, 0, 1, NULL, '2017-07-05', '09:30:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(16, 1, 66, 'UP', 'BS', 'S', 'N', 16, 'N', '2017-07-02 00:00:00', NULL, NULL, 1, 2, NULL, '2017-07-05', '11:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(17, 2, 4510, 'UP', 'BS', 'S', 'N', 17, 'N', '2017-07-05 00:00:00', '', NULL, 1, 3, NULL, '2017-07-05', '14:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(18, 2, 465, 'UP', 'BS', 'S', 'N', 18, 'N', '2017-07-05 00:00:00', NULL, NULL, 0, 2, NULL, '2017-07-05', '16:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
 -- 已匯出資料表的索引
@@ -97,7 +103,7 @@ ALTER TABLE `gamer`
 -- 使用資料表 AUTO_INCREMENT `gamer`
 --
 ALTER TABLE `gamer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '序號', AUTO_INCREMENT=13;COMMIT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '序號', AUTO_INCREMENT=19;COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

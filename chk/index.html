@@ -5,7 +5,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <title>chk</title>
 </head>
-<body>
+<body onload="do_first();">
   <div>
     <table border=1 style="text-align:center;" id="show">
       <thead>
@@ -26,16 +26,6 @@
 </html>
 
 <script>
-  let temp;
-   
-  $(document).ready(function(){
-    first();
-    temp = gettemp();  //取得一開始 table 的 html
-  });
-  
-  function gettemp(){
-    return document.getElementById('show').innerHTML;
-  }
   
   const webid_arr = {
     '1': 'sportslottery',
@@ -71,133 +61,128 @@
     "BL":"撞球",
     "GD":"賽馬/賽狗"
   }
-
-  //第一次進入網站
-  function first(){
-    $.ajax({
-      type: 'POST',
-      url: 'db.php',
-      data: {
-        webid: '1',
-        gametype: 'BS'
-      },
-      datatype: 'JSON',
-      success: function(data){
-        output(data, '1', 'BS');
-      }
-    });
+  var webid_sel;
+  var sport_sel;
+  //第一次進入網站 
+  function do_first(){
+    webid_sel = select_create(webid_arr, 'web');  //產生下拉式選單
+    sport_sel = select_create(gtype, 'sport');    //產生下拉式選單
+    $('#show tbody').append('<tr><td>'+webid_sel+'</td><td>'+sport_sel+'</td></tr>');  
+    getData();
   }
+  //第一次進入網站 <td></td><td></td><td></td><td></td>
   
-  //當下拉式選單有改變時，會觸發這個函式，i代表第幾個欄位的下拉式選單被改變，i從0開始數
-  function getData(gameid, i){
-    var webid = document.getElementById("web"+i).value;
-    var gametype = document.getElementById("sport"+i).value;
+  //當下拉式選單有改變時，會觸發這個函式
+  function getData(){
+    var webid = document.getElementById("web").value;
+    var gametype = document.getElementById("sport").value;
     $.ajax({
       type: 'POST',
       url: 'db.php',
       data: {
-        gameid: gameid,
         webid: webid,
         gametype: gametype
       },
       datatype: 'JSON',
       success: function(data){
-        output(data, webid, gametype);
+        output(data);
       }
     });
   }
   
-  function output2(data, webid, gametype){
-    let outTable = document.getElementById('show');
-    outTable.innerHTML = temp;  //每次都先回到最初狀況
-    for(let i = 0; i < data.length; i++){
-      let row = outTable.insertRow(i+1);
-      let cell1 = row.insertCell(0);
-      let str = ''
-      str = '<td><select id="web'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
-      for(let key in webid_arr){  //option用loop印出來
-        if(webid == key){  //被選擇的選項要是 selected
-          str += '<option value="'+key+'" selected> '+webid_arr[key]+' </option>';
-        }
-        else{
-          str += '<option value="'+key+'"> '+webid_arr[key]+' </option>';
-        }
-      }
-      str += '</select></td>';
-      cell1.innerHTML = str;
-      
-      let cell2 = row.insertCell(1);
-      str = '<td><select id="sport'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
-      for(let key in gtype){  //option用loop印出來
-        if(gametype == key){  //被選擇的選項要是 selected
-          str += '<option value="'+key+'" selected> '+gtype[key]+' </option>';
-        }
-        else{
-          str += '<option value="'+key+'"> '+gtype[key]+' </option>';
-        }
-      }
-      str += '</select></td>';
-      cell2.innerHTML = str;
-      
-      let cell3 = row.insertCell(2);
-      let cell4 = row.insertCell(3);
-      let cell5 = row.insertCell(4);
-      let cell6 = row.insertCell(5);
-      if(data[0] == "NO DATA"){  //當抓不到資料時會回傳 data[0] = "NO DATA" 過來
-        cell3.innerHTML = '<td></td>';
-        cell4.innerHTML = '<td></td>';
-        cell5.innerHTML = '<td></td>';
-        cell6.innerHTML = '<td></td>';
-      }
-      else{ 
-        cell3.innerHTML = '<td>' + data[i]['date_time'] + '</td>';  
-        cell4.innerHTML = '<td>' + data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'] + '</td>';
-        cell5.innerHTML = '<td>' + data[i]['home_s'] + ':' + data[i]['cust_s'] + '</td>';
-        cell6.innerHTML = '<td><input type="button" value="刪除" onclick="getData('+ data[i]['game_id']+','+ i +')"></td>';  //del 裡放的是這個比賽的game_id , i代表第幾個row，從0開始數
-      }
-    }
+  //按下刪除按鈕會觸發此函式
+  function del(gameid, i){
+    <!-- i.remove(); -->
+    <!-- console.log($('tbody tr').siblings()); -->
+    //若是第一列被刪除，就要再把select加回來
+    //if($('tbody tr').siblings().length == 0) //沒有一樣的element (<tr>)
+    <!-- if(i.innerHTML == $('tr').eq(1)[0].innerHTML){ -->
+      <!-- var tempx = $('td').eq(6); -->
+      <!-- var tempy = $('td').eq(7); -->
+      <!-- i.remove(); -->
+      <!-- $(tempx).insertBefore($('td').eq(6)); -->
+      <!-- $(tempy).insertBefore($('td').eq(7)); -->
+    <!-- } -->
+    <!-- else{ -->
+      <!-- i.remove(); -->
+    <!-- } -->
+    i.remove();
+    $.ajax({
+      type: 'POST',
+      url: 'db.php',
+      data: {
+        gameid: gameid
+      },
+      datatype: 'JSON'
+    });
   }
   
-  function output(data, webid, gametype){
-    var outTable = document.getElementById('show');
-    outTable.innerHTML = temp;  //每次都先回到最初狀況
-    for(var i = 0; i < data.length; i++){
-      var str = ''
-      str = '<td><select id="web'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
-      for(var key in webid_arr){  //option用loop印出來
-        if(webid == key){  //被選擇的選項要是 selected
-          str += '<option value="'+key+'" selected> '+webid_arr[key]+' </option>';
-        }
-        else{
-          str += '<option value="'+key+'"> '+webid_arr[key]+' </option>';
-        }
+  //產生下拉式選單
+  function select_create(arr, id){
+    var str = '<select id="'+id+'" onchange="getData()">';
+    for(var key in arr){  //option用loop印出來
+      str += '<option value="'+key+'"> ' + arr[key] + ' </option>';
+    }
+    str += '</select>';
+    return str;
+  }
+  
+  //0,1,2 ,3 ,4 ,5
+  //6,7,8 ,9 ,10,11
+  //   ,12,13,14,15
+  
+  //0,1,2,3,4,5
+  //0,1,2,3,4,5
+  //    0,1,2,3
+  
+  //0,1,2 ,3 ,4 ,5
+  //   ,6 ,7 ,8 ,9
+  //   ,10,11,12,13
+  //先刪除多出來的row，再把內容替換掉，最後row數不夠再加上去
+  function output(data){
+    document.getElementsByTagName('td')[6].setAttribute('rowspan',data.length+1);  //設定webid select那格的rowspan
+    document.getElementsByTagName('td')[7].setAttribute('rowspan',data.length+1);  //設定sport select那格的rowspan
+    var tbody_row = document.getElementById('show').tBodies[0].rows.length-1;  //舊的table的row數,-1是因為select佔一個row數量
+    
+    //把多出來的row刪掉
+    if(tbody_row > data.length){  
+      for(var i = tbody_row; i > data.length; i--){
+        document.getElementById('show').tBodies[0].deleteRow(i-1);
       }
-      str += '</select></td>';
-     
-      str += '<td><select id="sport'+i+'" onchange="getData(-1,'+i+')">';  //i代表第幾個row，從0開始數，-1代表不是刪除
-      for(var key in gtype){  //option用loop印出來
-        if(gametype == key){  //被選擇的選項要是 selected
-          str += '<option value="'+key+'" selected> '+gtype[key]+' </option>';
-        }
-        else{
-          str += '<option value="'+key+'"> '+gtype[key]+' </option>';
-        }
+      tbody_row = document.getElementById('show').tBodies[0].rows.length-1;  //新的table的row數,-1是因為select佔一個row數量
+    }
+    
+    //更新row裡的資料
+    if(data[0] == "NO DATA"){
+      <!-- for(var i = 5; i > 1; i--){ -->
+        <!-- $('tbody td')[i].remove(); -->
+      <!-- } -->
+      for(var i = 2; i < 6; i++){
+        $('tbody td').innerHTML = '';
       }
-      str += '</select></td>';
-      
-
-      if(data[0] == "NO DATA"){  //當抓不到資料時會回傳 data[0] = "NO DATA" 過來
-        str += '<td></td><td></td><td></td><td></td>';
+    }
+    else{  //替換table裡的資料
+      for(var k = 2, i = 0; i < tbody_row; k+=4, i++){
+        $('tbody td')[k].innerHTML = data[i]['date_time'];
+        $('tbody td')[k+1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
+        $('tbody td')[k+2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
+        $('tbody td')[k+3].innerHTML = '<input type="button" value="刪除" onclick="del('+ data[i]['game_id']+ ',event.path[2]' +')">';  //event.path[2] => tr
       }
-      else{ 
-        str += '<td>' + data[i]['date_time'] + '</td>';  
-        str += '<td>' + data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'] + '</td>';
-        str += '<td>' + data[i]['home_s'] + ':' + data[i]['cust_s'] + '</td>';
-        str += '<td><input type="button" value="刪除" onclick="getData('+ data[i]['game_id']+','+ i +')"></td>';  //del 裡放的是這個比賽的game_id , i代表第幾個row，從0開始數
-      }
-      
+    }
+    
+    //印新的row出來
+    var str = '';
+    for(var i = tbody_row; i < data.length; i++){
+      str = '';
+      str += '<td>' + data[i]['date_time'] + '</td>';  
+      str += '<td>' + data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'] + '</td>';
+      str += '<td>' + data[i]['home_s'] + ':' + data[i]['cust_s'] + '</td>';
+      str += '<td><input type="button" value="刪除" onclick="del('+ data[i]['game_id']+',event.path[2]'+')"></td>';  //del 裡放的是這個比賽的game_id 
       $('#show tbody').append('<tr>'+str+'</tr>');
     }
   }
+  
+  //10秒自動更新
+  setInterval(getData, 10000);
   
 </script>

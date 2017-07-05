@@ -1,10 +1,8 @@
 <?php
   header('Content-Type: application/json; charset=UTF-8');
   $servername = "127.0.0.1";
-  // $username = "jingcai";
-  // $password = "kufa88";
-  $username = "root";
-  $password = "admin";
+  $username = "jingcai";
+  $password = "kufa88";
   $dbname = "t1";
   
   $conn = new mysqli($servername, $username, $password, $dbname);
@@ -16,8 +14,12 @@
   date_default_timezone_set('Asia/Taipei'); // 設定時區
   $conn->query("SET NAMES 'UTF8'"); //提醒MySQL在處理文字資料的時候，別忘了UTF-8的編碼
   
-  $webid = (int)$_POST['webid'];
-  $gametype = addslashes($_POST['gametype']);
+  // $webid = (int)$_POST['webid'];
+  // $gametype = addslashes($_POST['gametype']);
+  if(isset($_POST['webid'])){
+    $webid = $_POST['webid'];
+    $gametype = $_POST['gametype'];
+  }
   $del_query= '';
   
   if(isset($_POST['gameid'])){  //當傳送gameid過來時表示要刪除資料
@@ -25,7 +27,8 @@
       $gameid = $_POST['gameid'];
       $del_query = "INSERT INTO chkSetResult (game_id) VALUES (". $gameid .")";
       $conn->query($del_query);
-    } 
+    }
+    die();    
   }
   
   //---------------------------------------------------------------------------------
@@ -63,7 +66,15 @@
   }  
   
   if(count($gamer_rst_Arr) == 0){  //若抓不到資料就回傳 NO DATA
-    $tarr = array("NO DATA");
+    $tarr = array();
+    // $tarr[0]['game_id'] = '';
+    // $tarr[0]['home_s'] = '';
+    // $tarr[0]['cust_s'] = '';
+    // $tarr[0]['date_time'] = '';
+    // $tarr[0]['home_name'] = '';
+    // $tarr[0]['cust_name'] = '';
+    // $tarr[0]['league_name'] = '';
+    $tarr[0] = "NO DATA";
     echo json_encode($tarr);
     die();
   }
@@ -134,7 +145,7 @@
   // print_r($league_name_c_Arr);
   
   //組合資料並回傳
-  //$finalresult = ['game_id', 'home_s', 'cust_s', 'start_dt', 'start_time', 'home_name', 'cust_name', 'league_name']
+  //$finalresult = ['game_id', 'home_s', 'cust_s', 'date_time', 'home_name', 'cust_name', 'league_name']
   //3藍鳥隊 1小熊隊 4洋基隊 2紅襪隊
   $finalresult = array();
   for($i = 0; $i < count($gamer_rst_Arr); $i++){
