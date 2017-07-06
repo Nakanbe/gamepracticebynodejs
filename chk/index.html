@@ -27,7 +27,7 @@
 
 <script>
   
-  const webid_arr = {
+  var webid_arr = {
     '1': 'sportslottery',
     '2': 'jingcai',
     '3': '7sport',
@@ -38,7 +38,7 @@
     '8': 'bedminton-12'
   }
   
-  const gtype = {
+  var gtype = {
     "BS":"美棒",
     "BK":"籃球",
     "FT":"足球",
@@ -61,12 +61,11 @@
     "BL":"撞球",
     "GD":"賽馬/賽狗"
   }
-  var webid_sel;
-  var sport_sel;
+
   //第一次進入網站 
   function do_first(){
-    webid_sel = select_create(webid_arr, 'web');  //產生下拉式選單
-    sport_sel = select_create(gtype, 'sport');    //產生下拉式選單
+    var webid_sel = select_create(webid_arr, 'web');  //產生下拉式選單
+    var sport_sel = select_create(gtype, 'sport');    //產生下拉式選單
     $('#show tbody').append('<tr><td>'+webid_sel+'</td><td>'+sport_sel+'</td></tr>');  
     getData();
   }
@@ -86,35 +85,24 @@
       datatype: 'JSON',
       success: function(data){
         output(data);
+      },
+      error: function(e){
+        console.log(e);
       }
     });
   }
   
   //按下刪除按鈕會觸發此函式
-  function del(gameid, i){
-    <!-- i.remove(); -->
-    <!-- console.log($('tbody tr').siblings()); -->
-    //若是第一列被刪除，就要再把select加回來
-    //if($('tbody tr').siblings().length == 0) //沒有一樣的element (<tr>)
-    <!-- if(i.innerHTML == $('tr').eq(1)[0].innerHTML){ -->
-      <!-- var tempx = $('td').eq(6); -->
-      <!-- var tempy = $('td').eq(7); -->
-      <!-- i.remove(); -->
-      <!-- $(tempx).insertBefore($('td').eq(6)); -->
-      <!-- $(tempy).insertBefore($('td').eq(7)); -->
-    <!-- } -->
-    <!-- else{ -->
-      <!-- i.remove(); -->
-    <!-- } -->
-    i.remove();
-    $.ajax({
+  function del(gameid){
+    event.target.parentNode.parentNode.remove();   //input -> td -> tr
+    /*$.ajax({
       type: 'POST',
       url: 'db.php',
       data: {
         gameid: gameid
       },
       datatype: 'JSON'
-    });
+    });*/
   }
   
   //產生下拉式選單
@@ -127,62 +115,35 @@
     return str;
   }
   
-  //0,1,2 ,3 ,4 ,5
-  //6,7,8 ,9 ,10,11
-  //   ,12,13,14,15
-  
-  //0,1,2,3,4,5
-  //0,1,2,3,4,5
-  //    0,1,2,3
-  
-  //0,1,2 ,3 ,4 ,5
-  //   ,6 ,7 ,8 ,9
-  //   ,10,11,12,13
-  //先刪除多出來的row，再把內容替換掉，最後row數不夠再加上去
+  //先刪除多出來的row，row數不夠加上去，在把內容更新
   function output(data){
-    document.getElementsByTagName('td')[6].setAttribute('rowspan',data.length+1);  //設定webid select那格的rowspan
-    document.getElementsByTagName('td')[7].setAttribute('rowspan',data.length+1);  //設定sport select那格的rowspan
-    var tbody_row = document.getElementById('show').tBodies[0].rows.length-1;  //舊的table的row數,-1是因為select佔一個row數量
+    $('tbody tr')[0].cells[0].setAttribute('rowspan',data.length+1);  //設定webid select那格的rowspan
+    $('tbody tr')[0].cells[1].setAttribute('rowspan',data.length+1);  //設定sport select那格的rowspan
     
-    //把多出來的row刪掉
-    if(tbody_row > data.length){  
+    //tbody_row是在tbody裡除了select那行的row數量
+    var tbody_row = $('tbody')[0].rows.length-1;  
+     
+    if(tbody_row > data.length){   //當資料長度小於row的數量，把多出來的row刪掉
       for(var i = tbody_row; i > data.length; i--){
-        document.getElementById('show').tBodies[0].deleteRow(i-1);
+        $('tbody tr')[i].remove();
       }
-      tbody_row = document.getElementById('show').tBodies[0].rows.length-1;  //新的table的row數,-1是因為select佔一個row數量
+    }
+    else if(tbody_row < data.length){  //當資料長度大於row的數量，印新的row出來
+      for(var i = tbody_row; i < data.length; i++){
+        $('#show tbody').append('<tr> <td></td> <td></td> <td></td> <td></td> </tr>');
+      }
     }
     
     //更新row裡的資料
-    if(data[0] == "NO DATA"){
-      <!-- for(var i = 5; i > 1; i--){ -->
-        <!-- $('tbody td')[i].remove(); -->
-      <!-- } -->
-      for(var i = 2; i < 6; i++){
-        $('tbody td').innerHTML = '';
-      }
-    }
-    else{  //替換table裡的資料
-      for(var k = 2, i = 0; i < tbody_row; k+=4, i++){
-        $('tbody td')[k].innerHTML = data[i]['date_time'];
-        $('tbody td')[k+1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
-        $('tbody td')[k+2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
-        $('tbody td')[k+3].innerHTML = '<input type="button" value="刪除" onclick="del('+ data[i]['game_id']+ ',event.path[2]' +')">';  //event.path[2] => tr
-      }
-    }
-    
-    //印新的row出來
-    var str = '';
-    for(var i = tbody_row; i < data.length; i++){
-      str = '';
-      str += '<td>' + data[i]['date_time'] + '</td>';  
-      str += '<td>' + data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'] + '</td>';
-      str += '<td>' + data[i]['home_s'] + ':' + data[i]['cust_s'] + '</td>';
-      str += '<td><input type="button" value="刪除" onclick="del('+ data[i]['game_id']+',event.path[2]'+')"></td>';  //del 裡放的是這個比賽的game_id 
-      $('#show tbody').append('<tr>'+str+'</tr>');
+    for(var i = 0; i < data.length; i++){
+      $('tbody tr')[i+1].cells[0].innerHTML = data[i]['date_time'];
+      $('tbody tr')[i+1].cells[1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
+      $('tbody tr')[i+1].cells[2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
+      $('tbody tr')[i+1].cells[3].innerHTML  = '<input type="button" value="刪除" onclick="del('+ data[i]['game_id'] +')">';  //event.path[2] => tr，del 裡放的是這個比賽的game_id 
     }
   }
-  
+   
   //10秒自動更新
-  setInterval(getData, 10000);
+  //setInterval(getData, 10000);
   
 </script>
