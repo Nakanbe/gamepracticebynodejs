@@ -6,20 +6,16 @@
   <title>chk</title>
 </head>
 <body onload="do_first();">
+  <div id='theSelect'>
+  </div>
   <div>
     <table border=1 style="text-align:center;" id="show">
-      <thead>
         <tr>
-          <td>站台</td>
-          <td>球種下拉式選單</td>
           <td>開賽時間（start_dt+start_time）</td>
           <td>內容（聯盟中文名稱<br>主隊中文名稱 VS 客隊中文名稱</td>
           <td>比分（主 VS 客）</td>
           <td>功能</td>
         </tr>
-      </thead>
-      <tbody>
-      </tbody>
     </table>
   </div>
 </body>
@@ -66,7 +62,7 @@
   function do_first(){
     var webid_sel = select_create(webid_arr, 'web');  //產生下拉式選單
     var sport_sel = select_create(gtype, 'sport');    //產生下拉式選單
-    $('#show tbody').append('<tr><td>'+webid_sel+'</td><td>'+sport_sel+'</td></tr>');  
+    $('#theSelect').append(webid_sel+sport_sel);  
     getData();
   }
   //第一次進入網站 <td></td><td></td><td></td><td></td>
@@ -75,6 +71,7 @@
   function getData(){
     var webid = document.getElementById("web").value;
     var gametype = document.getElementById("sport").value;
+    
     $.ajax({
       type: 'POST',
       url: 'db.php',
@@ -83,11 +80,18 @@
         gametype: gametype
       },
       datatype: 'JSON',
-      success: function(data){
+      error: function(xhr, ajaxOptions, thrownError){
+        console.log(xhr.responseText);
+      },
+      success: function(data, status, xhr){  //有連到目標網頁且回傳就是success
+        //console.log(xhr);
         output(data);
       },
-      error: function(e){
-        console.log(e);
+      beforeSend: function(){
+        $('select').attr({disabled: 'disabled'});
+      },
+      complete: function(){
+        $('select').removeAttr('disabled');
       }
     });
   }
@@ -117,29 +121,28 @@
   
   //先刪除多出來的row，row數不夠加上去，在把內容更新
   function output(data){
-    $('tbody tr')[0].cells[0].setAttribute('rowspan',data.length+1);  //設定webid select那格的rowspan
-    $('tbody tr')[0].cells[1].setAttribute('rowspan',data.length+1);  //設定sport select那格的rowspan
-    
-    //tbody_row是在tbody裡除了select那行的row數量
-    var tbody_row = $('tbody')[0].rows.length-1;  
+    var showTable = $('#show');
+  
+    //table row的數量，-1是因為第一行不用算
+    var table_row = showTable[0].rows.length-1;  
      
-    if(tbody_row > data.length){   //當資料長度小於row的數量，把多出來的row刪掉
-      for(var i = tbody_row; i > data.length; i--){
-        $('tbody tr')[i].remove();
+    if(table_row > data.length){   //當資料長度小於row的數量，把多出來的row刪掉
+      for(var i = table_row; i > data.length; i--){
+        showTable[0].rows[i].remove();
       }
     }
-    else if(tbody_row < data.length){  //當資料長度大於row的數量，印新的row出來
-      for(var i = tbody_row; i < data.length; i++){
-        $('#show tbody').append('<tr> <td></td> <td></td> <td></td> <td></td> </tr>');
+    else if(table_row < data.length){  //當資料長度大於row的數量，印新的row出來
+      for(var i = table_row; i < data.length; i++){
+        showTable.append('<tr> <td></td> <td></td> <td></td> <td></td> </tr>');
       }
     }
-    
+
     //更新row裡的資料
     for(var i = 0; i < data.length; i++){
-      $('tbody tr')[i+1].cells[0].innerHTML = data[i]['date_time'];
-      $('tbody tr')[i+1].cells[1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
-      $('tbody tr')[i+1].cells[2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
-      $('tbody tr')[i+1].cells[3].innerHTML  = '<input type="button" value="刪除" onclick="del('+ data[i]['game_id'] +')">';  //event.path[2] => tr，del 裡放的是這個比賽的game_id 
+      showTable[0].rows[i+1].cells[0].innerHTML = data[i]['date_time'];
+      showTable[0].rows[i+1].cells[1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
+      showTable[0].rows[i+1].cells[2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
+      showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" value="刪除" onclick="del('+ data[i]['game_id'] +')">';  //event.path[2] => tr，del 裡放的是這個比賽的game_id 
     }
   }
    
