@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機: 127.0.0.1
--- 產生時間： 2017-07-04 12:21:28
+-- 產生時間： 2017-07-07 12:19:14
 -- 伺服器版本: 10.1.22-MariaDB
 -- PHP 版本： 7.1.4
 
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- 資料庫： `t1`
 --
-CREATE DATABASE IF NOT EXISTS `t1` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `t1`;
 
 -- --------------------------------------------------------
 
@@ -30,12 +28,19 @@ USE `t1`;
 -- 資料表結構 `chksetresult`
 --
 
-DROP TABLE IF EXISTS `chksetresult`;
 CREATE TABLE `chksetresult` (
-  `id` int(11) NOT NULL,
   `game_id` int(11) NOT NULL COMMENT '賽事編號',
   `lasttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最後更新時間'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- 資料表的匯出資料 `chksetresult`
+--
+
+INSERT INTO `chksetresult` (`game_id`, `lasttime`) VALUES
+(66666, '2017-07-07 08:15:31'),
+(55545, '2017-07-07 08:15:37'),
+(11111, '2017-07-07 08:15:42');
 
 -- --------------------------------------------------------
 
@@ -43,7 +48,6 @@ CREATE TABLE `chksetresult` (
 -- 資料表結構 `game`
 --
 
-DROP TABLE IF EXISTS `game`;
 CREATE TABLE `game` (
   `id` bigint(20) NOT NULL COMMENT '賽事id',
   `league_id` int(11) NOT NULL COMMENT '聯盟',
@@ -74,7 +78,13 @@ INSERT INTO `game` (`id`, `league_id`, `game_type`, `home_team`, `cust_team`, `s
 (9, 3, 'FT', 9, 10, '2017-07-11', '00:04:00', '2017-07-01 00:04:00', '2017-07-01 00:04:00', NULL, 'N'),
 (10, 3, 'FT', 12, 11, '2017-07-08', '00:04:30', '2017-07-08 00:04:30', '2017-07-08 00:04:30', NULL, 'N'),
 (11, 3, 'FT', 10, 12, '2017-07-15', '00:04:00', '2017-07-15 00:04:00', '2017-07-15 00:04:00', NULL, 'N'),
-(12, 3, 'FT', 9, 11, '2017-07-15', '00:04:30', '2017-07-15 00:04:30', '2017-07-15 00:04:30', NULL, 'N');
+(12, 3, 'FT', 9, 11, '2017-07-15', '00:04:30', '2017-07-15 00:04:30', '2017-07-15 00:04:30', NULL, 'N'),
+(13, 1, 'BS', 4, 1, '2017-07-12', '08:30:00', '2017-07-05 00:00:00', NULL, NULL, 'N'),
+(14, 1, 'BS', 4, 3, '2017-07-12', '09:00:00', '2017-07-04 00:00:00', NULL, NULL, 'N'),
+(15, 1, 'BS', 2, 1, '2017-07-12', '09:30:00', '2017-07-04 00:00:00', NULL, NULL, 'N'),
+(16, 1, 'BS', 2, 4, '2017-07-12', '11:00:00', '2017-07-04 00:00:00', NULL, NULL, 'N'),
+(17, 2, 'BS', 5, 8, '2017-07-12', '14:00:00', '2017-07-05 00:00:00', NULL, NULL, 'N'),
+(18, 2, 'BS', 7, 6, '2017-07-12', '16:00:00', '2017-07-05 00:00:00', NULL, NULL, 'N');
 
 -- --------------------------------------------------------
 
@@ -82,7 +92,6 @@ INSERT INTO `game` (`id`, `league_id`, `game_type`, `home_team`, `cust_team`, `s
 -- 資料表結構 `gamer`
 --
 
-DROP TABLE IF EXISTS `gamer`;
 CREATE TABLE `gamer` (
   `id` bigint(20) NOT NULL COMMENT '序號',
   `webid` int(4) NOT NULL COMMENT '網站序號',
@@ -126,7 +135,13 @@ INSERT INTO `gamer` (`id`, `webid`, `web_game_id`, `ms`, `gtype`, `strong`, `run
 (9, 1, 456, 'UP', 'FT', 'S', 'N', 9, 'N', '2017-07-04 00:00:00', NULL, NULL, 0, 0, '2017-07-04 00:00:00', '2017-07-11', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
 (10, 2, 58, 'UP', 'FT', 'S', 'N', 10, 'N', '2017-07-05 00:00:00', NULL, NULL, 3, 2, NULL, '2017-07-08', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
 (11, 5, 565, 'UP', 'FT', 'S', 'N', 11, 'N', '2017-07-02 00:00:00', NULL, NULL, 1, 2, NULL, '2017-07-15', '00:04:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
-(12, 6, 468, 'UP', 'FT', 'S', 'N', 12, 'N', '2017-07-06 00:00:00', NULL, NULL, -2, 0, NULL, '2017-07-15', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL);
+(12, 6, 468, 'UP', 'FT', 'S', 'N', 12, 'N', '2017-07-06 00:00:00', NULL, NULL, -2, 0, NULL, '2017-07-15', '00:04:30', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(13, 1, 456, 'UP', 'BS', 'S', 'N', 13, 'N', '2017-07-05 00:00:00', NULL, NULL, 1, 2, NULL, '2017-07-12', '08:30:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(14, 1, 462, 'UP', 'BS', 'S', 'N', 14, 'N', '2017-07-04 00:00:00', NULL, NULL, 4, 3, NULL, '2017-07-12', '09:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(15, 1, 458, 'UP', 'BS', 'S', 'N', 15, 'N', '2017-07-01 00:00:00', NULL, NULL, 0, 1, NULL, '2017-07-12', '09:30:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(16, 1, 66, 'UP', 'BS', 'S', 'N', 16, 'N', '2017-07-02 00:00:00', NULL, NULL, 1, 2, NULL, '2017-07-12', '11:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(17, 2, 4510, 'UP', 'BS', 'S', 'N', 17, 'N', '2017-07-05 00:00:00', '', NULL, 1, 3, NULL, '2017-07-12', '14:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL),
+(18, 2, 465, 'UP', 'BS', 'S', 'N', 18, 'N', '2017-07-05 00:00:00', NULL, NULL, 0, 2, NULL, '2017-07-12', '16:00:00', 'S', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -134,7 +149,6 @@ INSERT INTO `gamer` (`id`, `webid`, `web_game_id`, `ms`, `gtype`, `strong`, `run
 -- 資料表結構 `league`
 --
 
-DROP TABLE IF EXISTS `league`;
 CREATE TABLE `league` (
   `id` int(11) NOT NULL COMMENT '聯盟id',
   `game_type` varchar(5) CHARACTER SET latin1 NOT NULL COMMENT '聯盟球種',
@@ -173,7 +187,6 @@ INSERT INTO `league` (`id`, `game_type`, `name_e`, `name_c`, `name_g`, `name_j`,
 -- 資料表結構 `team`
 --
 
-DROP TABLE IF EXISTS `team`;
 CREATE TABLE `team` (
   `id` int(11) NOT NULL COMMENT '隊伍id',
   `league_id` int(11) NOT NULL COMMENT '聯盟id',
@@ -217,7 +230,6 @@ INSERT INTO `team` (`id`, `league_id`, `game_type`, `name_e`, `name_c`, `name_g`
 -- 資料表結構 `web`
 --
 
-DROP TABLE IF EXISTS `web`;
 CREATE TABLE `web` (
   `id` tinyint(4) UNSIGNED NOT NULL COMMENT '網站序號',
   `name` varchar(20) NOT NULL COMMENT '網站名稱',
@@ -249,7 +261,7 @@ INSERT INTO `web` (`id`, `name`, `addr`, `insert_dt`, `memo`, `enable`) VALUES
 -- 資料表索引 `chksetresult`
 --
 ALTER TABLE `chksetresult`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`game_id`);
 
 --
 -- 資料表索引 `game`
@@ -303,20 +315,15 @@ ALTER TABLE `web`
 --
 
 --
--- 使用資料表 AUTO_INCREMENT `chksetresult`
---
-ALTER TABLE `chksetresult`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
---
 -- 使用資料表 AUTO_INCREMENT `game`
 --
 ALTER TABLE `game`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '賽事id', AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '賽事id', AUTO_INCREMENT=19;
 --
 -- 使用資料表 AUTO_INCREMENT `gamer`
 --
 ALTER TABLE `gamer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '序號', AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '序號', AUTO_INCREMENT=19;
 --
 -- 使用資料表 AUTO_INCREMENT `league`
 --

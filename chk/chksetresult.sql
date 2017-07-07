@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機: 127.0.0.1
--- 產生時間： 2017-07-04 12:22:51
+-- 產生時間： 2017-07-07 12:19:25
 -- 伺服器版本: 10.1.22-MariaDB
 -- PHP 版本： 7.1.4
 
@@ -29,10 +29,18 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `chksetresult` (
-  `id` int(11) NOT NULL,
   `game_id` int(11) NOT NULL COMMENT '賽事編號',
   `lasttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最後更新時間'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- 資料表的匯出資料 `chksetresult`
+--
+
+INSERT INTO `chksetresult` (`game_id`, `lasttime`) VALUES
+(66666, '2017-07-07 08:15:31'),
+(55545, '2017-07-07 08:15:37'),
+(11111, '2017-07-07 08:15:42');
 
 --
 -- 已匯出資料表的索引
@@ -42,17 +50,8 @@ CREATE TABLE `chksetresult` (
 -- 資料表索引 `chksetresult`
 --
 ALTER TABLE `chksetresult`
-  ADD PRIMARY KEY (`id`);
-
---
--- 在匯出的資料表使用 AUTO_INCREMENT
---
-
---
--- 使用資料表 AUTO_INCREMENT `chksetresult`
---
-ALTER TABLE `chksetresult`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;COMMIT;
+  ADD PRIMARY KEY (`game_id`);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

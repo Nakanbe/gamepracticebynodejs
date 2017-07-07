@@ -52,3 +52,21 @@ gamer->gtype（球種）對應如下：
 2.table不要每次都重畫 修改內容就好了
 3.first不要寫死
 4.first寫在onload
+
+1.流程控制
+1.1 法一:擋住，在資料回傳前只能送一次
+1.2 法二:只留下最後一筆資料，其他的通通刪掉
+2.$('tbody tr')設成變數
+3.show改掉
+4.select拿出外面
+5.加入error，當php有錯誤時要處理
+
+1.parentNode寫成loop比較容易更動
+2.自動更新要設timeout，才不會還沒完成又一直送資料
+3.try catch改掉，這裡不太適合，因為throw是給別人，但這裡throw給自己
+4.if也是有執行順序的if(a$$b$$c)，先判斷A在判斷B在判斷C
+
+1.更新時間要可以選
+2.SQL IN 改 EXIST
+3.$_POST改成變數 ($qqq)
+4.arr_to_str 改成 reduce

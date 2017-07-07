@@ -22,7 +22,6 @@
 </html>
 
 <script>
-  
   var webid_arr = {
     '1': 'sportslottery',
     '2': 'jingcai',
@@ -72,13 +71,15 @@
     var webid = document.getElementById("web").value;
     var gametype = document.getElementById("sport").value;
     var gameid = -1;  //預設-1
-    if(event.type == 'click'){  //按下刪除
+    if(event && event.type == 'click'){  //按下刪除
       var x = event.target; //.parentNode.parentNode;
-      while(x.tagName!='TR') x = x.parent;
-      x <-- tr
+      while(x.tagName != 'TR'){
+         x = x.parentNode;
+      }
       gameid = x.attributes[0].value;
       x.remove();
     }
+
     $.ajax({
       type: 'POST',
       url: 'db.php',
@@ -93,33 +94,24 @@
         output( [] );
       },
       success: function(data, status, xhr){  
+        
         if(gameid == -1){  //當不是刪除時
-          try{
-            if(!data[0].hasOwnProperty('game_id')) throw 'ERROR';
-          }
-          catch(err){
-            console.log(err);
-            data = [];
-          }
-          finally{
-            output(data);
-          }
-          ////
           if(data[0] && data[0].hasOwnProperty('game_id')) {
           }
           else {
-            console.log(err);
+            //console.log(err);
             data = [];
-
           }
           output(data);
         }
       },
       beforeSend: function(){  //在資料回傳前把select disable掉
+      //zzz = 'fff';
         $('#theSelect select').attr({disabled: 'disabled'});
       },
       complete: function(){   //收到回傳資料後就可以用了
         $('#theSelect select').removeAttr('disabled');
+        //setTimeout(getData, 1000);
       }
     });
   }
@@ -163,6 +155,7 @@
   }
    
   //10秒自動更新
-  //setInterval(getData, 10000);
+  //setInterval(getData, 1000);
+  //setTimeout(getData, 1000);
   
 </script>

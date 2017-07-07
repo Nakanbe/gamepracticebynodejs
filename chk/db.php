@@ -8,24 +8,28 @@
   if($conn->connect_error){
     die("connection failed: ". $conn->connect_error);
   }
+  $chk = $_POST;
+  
+  //echo '{"1" => "AS"}';
+ // die();
+  //sleep(2);
+  //dsgddsdsgggdfdsfsd
   date_default_timezone_set('Asia/Taipei'); // 設定時區
   $conn->query("SET NAMES 'UTF8'"); //提醒MySQL在處理文字資料的時候，別忘了UTF-8的編碼
-  
-  // $webid = (int)$_POST['webid'];
-  // $gametype = addslashes($_POST['gametype']);
-  if(isset($_POST['webid'])){
-    $webid = $_POST['webid'];
-    $gametype = $_POST['gametype'];
+
+  if(isset($chk['webid'])){
+    $webid = $chk['webid'];
+    $gametype = $chk['gametype'];
   }
   $del_query= '';
   
-  if(isset($_POST['gameid'])){  //當傳送gameid過來時表示要刪除資料
-    if($_POST['gameid'] != -1){  //當gameid不是-1才是刪除
-      $gameid = $_POST['gameid'];
+  if(isset($chk['gameid'])){  //當傳送gameid過來時表示要刪除資料
+    if($chk['gameid'] != -1){  //當gameid不是-1才是刪除
+      $gameid = $chk['gameid'];
       $del_query = "INSERT INTO chkSetResult (game_id) VALUES (". $gameid .")";
       $conn->query($del_query);
-    }
-    die();    
+      die('{}');    
+    }   
   }
   
   //---------------------------------------------------------------------------------
@@ -48,7 +52,12 @@
                         AND
                         (cust_s != -1 AND home_s != -1)
                         AND
-                        game_id NOT IN (SELECT game_id FROM chkSetResult)
+                         NOT EXISTS (SELECT 
+                                      game_id 
+                                    FROM 
+                                      chkSetResult 
+                                    WHERE 
+                                      chkSetResult.game_id = gamer.game_id)
                         AND
                         webid = ".$webid."
                         AND gtype = '".$gametype."'";
@@ -83,7 +92,7 @@
   $game_id_str = arr_to_str($gamer_rst_Arr, 'game_id');
  
   //利用game_id到game抓home_team和cust_team和league_id
-  //最後資料會放在$game_rst_Arr[home_team, cust_team, league_id]
+  //query完後的資料會最後會放在$game_rst_Arr[home_team, cust_team, league_id]
   $gameTable_query = "SELECT home_team, cust_team, league_id
                       FROM game
                       WHERE id IN (" . $game_id_str .")";
@@ -101,7 +110,7 @@
   //---------------------------------------------------------------------------------
   //利用$game_rst_Arr[home_team]和$game_rst_Arr[cust_team]到team抓sname_c和id
   //先把home_team 和 cust_team處理成字串
-  //最後資料會在$team_name_c_Arr
+  //query完後的資料會最後會放在$team_name_c_Arr
   $home_team_str = arr_to_str($game_rst_Arr, 'home_team');
   $cust_team_str = arr_to_str($game_rst_Arr, 'cust_team');
   
@@ -120,7 +129,7 @@
   
   //---------------------------------------------------------------------------------
   //利用$game_rst_Arr[league_id]到league抓name_c, id
-  //最後資料會在$league_name_c_Arr
+  //query完後的資料會最後會放在$league_name_c_Arr
   $league_id_str = arr_to_str($game_rst_Arr, 'league_id');
   
   //到資料庫抓資料
@@ -176,6 +185,7 @@
     $str = implode(",", $tarr);
     return $str;
   }
+  
   
   
 
