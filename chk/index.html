@@ -81,17 +81,28 @@
       },
       datatype: 'JSON',
       error: function(xhr, ajaxOptions, thrownError){
-        console.log(xhr.responseText);
+        console.log(ajaxOptions);
+        output( [] );
       },
-      success: function(data, status, xhr){  //有連到目標網頁且回傳就是success
+      success: function(data, status, xhr){  
         //console.log(xhr);
-        output(data);
+        //看有無game_id的key
+        try{
+          if(!data[0].hasOwnProperty('game_id')) throw 'ERROR';
+        }
+        catch(err){
+          console.log(err);
+          data = [];
+        }
+        finally{
+          output(data);
+        }
       },
-      beforeSend: function(){
-        $('select').attr({disabled: 'disabled'});
+      beforeSend: function(){  //在資料回傳前把select disable掉
+        $('#theSelect select').attr({disabled: 'disabled'});
       },
-      complete: function(){
-        $('select').removeAttr('disabled');
+      complete: function(){   //收到回傳資料後就可以用了
+        $('#theSelect select').removeAttr('disabled');
       }
     });
   }
@@ -99,14 +110,19 @@
   //按下刪除按鈕會觸發此函式
   function del(gameid){
     event.target.parentNode.parentNode.remove();   //input -> td -> tr
-    /*$.ajax({
+    $.ajax({
       type: 'POST',
       url: 'db.php',
       data: {
         gameid: gameid
       },
-      datatype: 'JSON'
-    });*/
+      success: function(data){},
+      error: function(xhr, thrownError){
+        console.log(xhr);
+      }
+    }).done(function( msg ) {
+    console.log(msg);
+  });
   }
   
   //產生下拉式選單
@@ -133,7 +149,7 @@
     }
     else if(table_row < data.length){  //當資料長度大於row的數量，印新的row出來
       for(var i = table_row; i < data.length; i++){
-        showTable.append('<tr> <td></td> <td></td> <td></td> <td></td> </tr>');
+        showTable.append('<tr id="'+'data[i]['game_id']'+'"> <td></td> <td></td> <td></td> <td></td> </tr>');
       }
     }
 
