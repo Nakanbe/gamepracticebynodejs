@@ -71,11 +71,19 @@
   function getData(){
     var webid = document.getElementById("web").value;
     var gametype = document.getElementById("sport").value;
-    
+    var gameid = -1;  //預設-1
+    if(event.type == 'click'){  //按下刪除
+      var x = event.target; //.parentNode.parentNode;
+      while(x.tagName!='TR') x = x.parent;
+      x <-- tr
+      gameid = x.attributes[0].value;
+      x.remove();
+    }
     $.ajax({
       type: 'POST',
       url: 'db.php',
       data: {
+        gameid: gameid,
         webid: webid,
         gametype: gametype
       },
@@ -85,16 +93,25 @@
         output( [] );
       },
       success: function(data, status, xhr){  
-        //console.log(xhr);
-        //看有無game_id的key
-        try{
-          if(!data[0].hasOwnProperty('game_id')) throw 'ERROR';
-        }
-        catch(err){
-          console.log(err);
-          data = [];
-        }
-        finally{
+        if(gameid == -1){  //當不是刪除時
+          try{
+            if(!data[0].hasOwnProperty('game_id')) throw 'ERROR';
+          }
+          catch(err){
+            console.log(err);
+            data = [];
+          }
+          finally{
+            output(data);
+          }
+          ////
+          if(data[0] && data[0].hasOwnProperty('game_id')) {
+          }
+          else {
+            console.log(err);
+            data = [];
+
+          }
           output(data);
         }
       },
@@ -107,23 +124,6 @@
     });
   }
   
-  //按下刪除按鈕會觸發此函式
-  function del(gameid){
-    event.target.parentNode.parentNode.remove();   //input -> td -> tr
-    $.ajax({
-      type: 'POST',
-      url: 'db.php',
-      data: {
-        gameid: gameid
-      },
-      success: function(data){},
-      error: function(xhr, thrownError){
-        console.log(xhr);
-      }
-    }).done(function( msg ) {
-    console.log(msg);
-  });
-  }
   
   //產生下拉式選單
   function select_create(arr, id){
@@ -149,7 +149,7 @@
     }
     else if(table_row < data.length){  //當資料長度大於row的數量，印新的row出來
       for(var i = table_row; i < data.length; i++){
-        showTable.append('<tr id="'+'data[i]['game_id']'+'"> <td></td> <td></td> <td></td> <td></td> </tr>');
+        showTable.append('<tr id="'+data[i]['game_id']+'"> <td></td> <td></td> <td></td> <td></td> </tr>');
       }
     }
 
@@ -158,7 +158,7 @@
       showTable[0].rows[i+1].cells[0].innerHTML = data[i]['date_time'];
       showTable[0].rows[i+1].cells[1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
       showTable[0].rows[i+1].cells[2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
-      showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" value="刪除" onclick="del('+ data[i]['game_id'] +')">';  //event.path[2] => tr，del 裡放的是這個比賽的game_id 
+      showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" value="刪除" onclick="getData()">';  
     }
   }
    
