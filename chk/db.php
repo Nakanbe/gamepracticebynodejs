@@ -11,8 +11,8 @@
   $chk = $_POST;
   
   //echo '{"1" => "AS"}';
- // die();
-  //sleep(2);
+  // die();
+  sleep(rand(1,10));
   //dsgddsdsgggdfdsfsd
   date_default_timezone_set('Asia/Taipei'); // 設定時區
   $conn->query("SET NAMES 'UTF8'"); //提醒MySQL在處理文字資料的時候，別忘了UTF-8的編碼
@@ -22,7 +22,13 @@
     $gametype = $chk['gametype'];
   }
   $del_query= '';
+  //取得array，串成字串
   
+  $webid_str = implode(',', $webid);
+  $gametype_str = "'".implode("','", $gametype)."'";
+  //$gametype_str = "'" + $gametype_str + "'";
+  //echo ($webid_str);
+  //echo($gametype_str);
   if(isset($chk['gameid'])){  //當傳送gameid過來時表示要刪除資料
     if($chk['gameid'] != -1){  //當gameid不是-1才是刪除
       $gameid = $chk['gameid'];
@@ -48,9 +54,9 @@
                        FROM
                         gamer
                        WHERE
-                        ((start_dt = '".$nowdate."' AND start_time > '".$nowtime."') OR start_dt > '".$nowdate."')
+                        ((start_dt = '".$nowdate."' AND start_time < '".$nowtime."') OR start_dt < '".$nowdate."')
                         AND
-                        (cust_s != -1 AND home_s != -1)
+                        (cust_s != 'NULL' AND home_s != 'NULL')
                         AND
                          NOT EXISTS (SELECT 
                                       game_id 
@@ -59,8 +65,8 @@
                                     WHERE 
                                       chkSetResult.game_id = gamer.game_id)
                         AND
-                        webid = ".$webid."
-                        AND gtype = '".$gametype."'";
+                         webid IN (".$webid_str.")
+                        AND gtype IN (".$gametype_str.")";
   $result = $conn->query($gamerTable_query);
   $gamer_rst_Arr = array();
   //echo $gamerTable_query;
