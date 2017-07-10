@@ -6,7 +6,12 @@
   <title>chk</title>
 </head>
 <body onload="do_first();">
-  <div id='theSelect'>
+  <div id="theSelect">
+    <select id="set_time" onchange="change_time();">
+      <option value="3">3秒</option>
+      <option value="5">5秒</option>
+      <option value="10">10秒</option>
+    </select>
   </div>
   <div>
     <table border=1 style="text-align:center;" id="show">
@@ -22,6 +27,11 @@
 </html>
 
 <script>
+  var auto_time;
+  function change_time(){
+    auto_time = document.getElementById('set_time').value * 1000;
+    console.log(auto_time);
+  }
   var webid_arr = {
     '1': 'sportslottery',
     '2': 'jingcai',
@@ -62,15 +72,18 @@
     var webid_sel = select_create(webid_arr, 'web');  //產生下拉式選單
     var sport_sel = select_create(gtype, 'sport');    //產生下拉式選單
     $('#theSelect').append(webid_sel+sport_sel);  
+    auto_time = document.getElementById('set_time').value * 1000;
     getData();
   }
   //第一次進入網站 <td></td><td></td><td></td><td></td>
   
   //當下拉式選單有改變時，會觸發這個函式
+  var f_onchange = 0;
   function getData(){
     var webid = document.getElementById("web").value;
     var gametype = document.getElementById("sport").value;
     var gameid = -1;  //預設-1
+    var f_auto = 1;
     if(event && event.type == 'click'){  //按下刪除
       var x = event.target; //.parentNode.parentNode;
       while(x.tagName != 'TR'){
@@ -79,7 +92,13 @@
       gameid = x.attributes[0].value;
       x.remove();
     }
-
+    else if(event && event.type == 'change'){
+      f_onchange = 1;
+      f_auto = 0;
+    }
+    if(f_onchange == 1){  //在onchange之後送的資料通通不要
+      f_auto = 0;
+    }
     $.ajax({
       type: 'POST',
       url: 'db.php',
@@ -90,11 +109,11 @@
       },
       datatype: 'JSON',
       error: function(xhr, ajaxOptions, thrownError){
-        console.log(ajaxOptions);
+        console.log(xhr);
         output( [] );
       },
       success: function(data, status, xhr){  
-        
+        console.log(f_onchange + ',' + f_auto);
         if(gameid == -1){  //當不是刪除時
           if(data[0] && data[0].hasOwnProperty('game_id')) {
           }
@@ -102,16 +121,27 @@
             //console.log(err);
             data = [];
           }
-          output(data);
+          if(f_onchange == 1 && f_auto == 0){ 
+            output(data);
+            console.log('complete output');
+          }
+          else if(f_onchange == 0 && f_auto == 1){
+            
+            output(data);
+          }
         }
       },
       beforeSend: function(){  //在資料回傳前把select disable掉
-      //zzz = 'fff';
-        $('#theSelect select').attr({disabled: 'disabled'});
+        if(f_onchange == 1){
+          $('#theSelect select').attr({disabled: 'disabled'});
+        }
       },
       complete: function(){   //收到回傳資料後就可以用了
-        $('#theSelect select').removeAttr('disabled');
-        //setTimeout(getData, 1000);
+        if(f_onchange == 1 && f_auto == 0){
+          console.log('complete');
+          f_onchange = 0;
+          $('#theSelect select').removeAttr('disabled');
+        }
       }
     });
   }
@@ -155,7 +185,7 @@
   }
    
   //10秒自動更新
-  //setInterval(getData, 1000);
+  setInterval(getData, 1000);
   //setTimeout(getData, 1000);
   
 </script>
