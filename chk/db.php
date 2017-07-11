@@ -1,21 +1,13 @@
 <?php
   header('Content-Type: application/json; charset=UTF-8');
-  $servername = "127.0.0.1";
-  $username = "jingcai";
-  $password = "kufa88";
-  $dbname = "t1";
-  $conn = new mysqli($servername, $username, $password, $dbname);
-  if($conn->connect_error){
-    die("connection failed: ". $conn->connect_error);
-  }
+  include('dbconnect.php');
+  
   $chk = $_POST;
   
   //echo '{"1" => "AS"}';
   // die();
   sleep(rand(1,10));
   //dsgddsdsgggdfdsfsd
-  date_default_timezone_set('Asia/Taipei'); // 設定時區
-  $conn->query("SET NAMES 'UTF8'"); //提醒MySQL在處理文字資料的時候，別忘了UTF-8的編碼
 
   if(isset($chk['webid'])){
     $webid = $chk['webid'];
@@ -56,7 +48,7 @@
                        WHERE
                         ((start_dt = '".$nowdate."' AND start_time < '".$nowtime."') OR start_dt < '".$nowdate."')
                         AND
-                        (cust_s != 'NULL' AND home_s != 'NULL')
+                         NOT ( cust_s IS NULL OR home_s IS NULL)
                         AND
                          NOT EXISTS (SELECT 
                                       game_id 
@@ -95,7 +87,8 @@
   
   //---------------------------------------------------------------------------------
   //把需要的資料處理成字串
-  $game_id_str = arr_to_str($gamer_rst_Arr, 'game_id');
+  //$game_id_str = arr_to_str($gamer_rst_Arr, 'game_id');
+  $game_id_str = implode(',', array_column($gamer_rst_Arr, 'game_id'));
  
   //利用game_id到game抓home_team和cust_team和league_id
   //query完後的資料會最後會放在$game_rst_Arr[home_team, cust_team, league_id]
@@ -117,8 +110,12 @@
   //利用$game_rst_Arr[home_team]和$game_rst_Arr[cust_team]到team抓sname_c和id
   //先把home_team 和 cust_team處理成字串
   //query完後的資料會最後會放在$team_name_c_Arr
-  $home_team_str = arr_to_str($game_rst_Arr, 'home_team');
-  $cust_team_str = arr_to_str($game_rst_Arr, 'cust_team');
+  //$home_team_str = arr_to_str($game_rst_Arr, 'home_team');
+  //$cust_team_str = arr_to_str($game_rst_Arr, 'cust_team');
+  //php > 5.5.0
+  $home_team_str = implode(',', array_column($game_rst_Arr, 'home_team'));
+  $cust_team_str = implode(',', array_column($game_rst_Arr, 'cust_team'));
+  //echo $home_team_str;
   
   //到資料庫抓資料
   $teamTable_query = "SELECT name_c, id FROM team WHERE id IN (".$home_team_str.",".$cust_team_str.")";
@@ -136,7 +133,8 @@
   //---------------------------------------------------------------------------------
   //利用$game_rst_Arr[league_id]到league抓name_c, id
   //query完後的資料會最後會放在$league_name_c_Arr
-  $league_id_str = arr_to_str($game_rst_Arr, 'league_id');
+  //$league_id_str = arr_to_str($game_rst_Arr, 'league_id');
+  $league_id_str = implode(',', array_column($game_rst_Arr, 'league_id'));
   
   //到資料庫抓資料
   $leagueTable_query = "SELECT name_c, id FROM league WHERE id IN (".$league_id_str.")";
