@@ -66,10 +66,13 @@
     getWebname();
   }
   
-  function getWebname(callback){
+  function getWebname(){
     $.ajax({
       type: 'POST',
-      url: 'webname.php',
+      url: 'entry.php',
+      data: {
+        gate: 'getweb'
+      },
       datatype: 'JSON',
       error: function(xhr, ajaxOptions, thrownError){
         console.log(xhr);
@@ -91,6 +94,7 @@
   function getData(){
     var gameid = -1;  //預設-1
     var f_change = 0; //是否為確認
+    var gate = 'auto';
     if(event){
       var x = event.target;
       if(x.className == 'delete'){  //按下刪除
@@ -101,19 +105,21 @@
         gameid = x.attributes[0].value;
         x.remove();
         auto++;
+        gate = 'delete';
       }
       else if(x.className == 'change'){  //確認按鈕
         auto++; //改變狀態
         f_change = 1;
         webid = $('#thewebid').serialize();  //取得checkbox的資料
         gametype = $('#thegametype').serialize();  //取得checkbox的資料
+        gate = 'get';
       }
     }
     var f_auto = auto;  //將整體狀態賦予給這次被呼叫的函式
-    $.ajax({
+    var xhr = $.ajax({
       type: 'POST',
-      url: 'db.php',
-      data: 'gameid='+gameid+'&'+webid+'&'+gametype,
+      url: 'entry.php',
+      data: 'gate='+gate+'&'+'gameid='+gameid+'&'+webid+'&'+gametype,
       datatype: 'JSON',
       error: function(xhr, ajaxOptions, thrownError){
         console.log(xhr);
@@ -224,6 +230,6 @@
       showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" class="delete" value="刪除" onclick="getData()">';  
     }
   }
-   
+  
   
 </script>
