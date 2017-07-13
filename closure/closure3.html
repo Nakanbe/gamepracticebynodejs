@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <title>閉包</title>
+</head>
+<body>
+  <button id="first">First</button>
+  <button id="second">Second</button>
+  <button id="third">Third</button>
+</body>
+</html>
+
+<script>
+  var button = document.getElementsByTagName('button');
+  button[0].addEventListener('click', function() {
+    SendData();
+  });
+  function SendData() {
+    $.ajax({
+      type: 'POST',
+      url: 'closure_ajax.php',
+      data: 'data=1234',
+      success: function(rdata) {
+        console.log(rdata);
+      }
+    });
+  }
+</script>
