@@ -82,97 +82,85 @@
         var webid_sel = checkbox_create(data, 'webid');  // 產生checkbox
         var sport_sel = checkbox_create(gtype, 'gametype');    // 產生checkbox
         var table_sel = '<form id="gameform"><table border=1>'+webid_sel+sport_sel+'</table>';
-        $('#theCheckbox').append(table_sel+'<input type="button" class="change" value="確認" onclick="GD.change()">');  
+        $('#theCheckbox').append(table_sel+'<input type="button" class="change" value="確認" onclick="getData()">');  
       }
     });
   }
   
-  var GD = GetData();
+  // 按下確認或刪除或自動更新
+  // form要分兩個送過去
+  var auto = 0;  // 整體狀態
+  var gamecb; // 抓取checkbox的資料
+  var xhr2;
   var CD = CountDown();  //倒數計時
-  function GetData(){
-    // status是整體的狀態按下確認會變成change，按下刪除會變成delete，自動更新是auto
-    // send_data是要送出的資料
-    // gamecb是checkbox的資料
-    // GD_timeout是自動更新(setTimeout)
-    // GD_xhr是ajax
-    var status, send_data, gamecb, GD_timeout, GD_xhr;
-    return {
-      delete: function() {
-        clearTimeout(GD_timeout);  // 有自動更新就要清掉
-        status = 'delete';
-        if(GD_xhr && GD_xhr.readyState == 1){  // 當有正在送的ajax就abort掉
-          GD_xhr.abort();
-        }
-        var x = event.target;
+  // var xhrr;
+  function getData(){
+    var gameid = -1;  // 預設-1
+    var f_change = 0; // 是否為確認
+    var gate = 'auto';
+    if(event){
+      var x = event.target;
+      if(x.className == 'delete'){  // 按下刪除
+        //.parentNode.parentNode;
         while(x.tagName != 'TR'){
-          x = x.parentNode;
+           x = x.parentNode;
         }
-        x.remove();
-        send_data = 'gate=delete&gameid=' + x.attributes[0].value;
-        return function (this_status) { // 執行send
-          GD.send(send_data, this_status);
-        }(status);
-      },
-      change: function() {
-        clearTimeout(GD_timeout);  // 有自動更新就要清掉
-        if(GD_xhr && GD_xhr.readyState == 1){ // 當有正在送的ajax就abort掉
-          GD_xhr.abort();
-        }
-        gamecb = $('#gameform').serialize();  // 取得checkbox的資料
-        send_data = 'gate=get&'+gamecb;
-        status = 'change';
-        return function (this_status) {  // 執行send
-          GD.send(send_data, this_status);
-        }(status);
-      },
-      auto: function() {
-        send_data = 'gate=auto&'+gamecb;
-        return function (this_status) { // 執行send
-          GD.send(send_data, this_status);
-        }(status);
-      },
-      send: function(send_data, this_status) {
-        GD_xhr = $.ajax({
-          type: 'POST',
-          url: 'entry.php',
-          data: send_data,
-          dataType: 'JSON',
-          error: function (xhr, ajaxOptions, thrownError){
-            console.log(xhr);
-            if(xhr.statusText != 'abort'){  // 當這個xhr是被abort掉的就不更新
-              output( [] );
-            }
-          },
-          success: function(data) {
-            if(this_status != 'delete'){  // 狀態不是刪除時
-              if(data[0] && data[0].hasOwnProperty('game_id')) {
-
-              }
-              else{
-                data = [];
-              }
-              output(data);
-            }
-          },
-          beforeSend: function () {
-            if(this_status == 'delete' || this_status == 'change'){
-              $('input').prop('disabled', true);  // disable input，在資料回傳錢都不可以再用
-              CD.stopc(); // 停止計時
-            }
-          },
-          complete: function(xhr, textStatus) {
-            if(this_status == status && textStatus != 'abort'){  // 狀態一樣或是不是被abort時
-              GD_timeout = setTimeout(GD.auto, auto_time);  // 自動更新
-              status = 'auto';  // 改變狀態
-              CD.start();  // 開始倒數
-            }
-            if(this_status == 'delete' || this_status == 'change'){
-              $('input').prop('disabled', false);  // 解除 disable
-            }
-          }
-        });
+        gameid = x.attributes[0].value;
+        x.remove();  // 移除這一列
+        auto++;   // 改變狀態
+        gate = 'delete';  // 設定gate
+      }
+      else if(x.className == 'change'){  // 確認按鈕
+        auto++; //改變狀態
+        f_change = 1;
+        gamecb = $('#gameform').serialize();  //取得checkbox的資料
+        gate = 'get';
       }
     }
+    var f_auto = auto;  //將整體狀態賦予給這次被呼叫的函式
+    xhr2 = $.ajax({
+      type: 'POST',
+      url: 'entry.php',
+      data: 'gate='+gate+'&'+'gameid='+gameid+'&'+gamecb,
+      dataType: 'JSON',
+      error: function(xhr, ajaxOptions, thrownError){
+        console.log(xhr);
+        output( [] );
+      },
+      success: function(data, status, xhr){  
+        //console.log(auto + ',' + f_auto);
+        if(gameid == -1){  //當不是刪除時
+          if(data[0] && data[0].hasOwnProperty('game_id')) {
+          }
+          else {
+            //console.log(err);
+            data = [];
+          }
+          if(f_auto == auto){ //整體狀態和function此次狀態一樣才能更新
+            //console.log(auto + ',' + f_auto);
+            output(data);
+          }
+        }
+      },
+      beforeSend: function(){  //在資料回傳前disable掉
+        if(f_change == 1 || gameid != -1){  //當按下更新或刪除時
+          $('input').attr({disabled: 'disabled'});  //把checkbox和input disable掉
+          CD.stopc(); // 停止倒數
+        }
+      },
+      complete: function(){   //收到回傳資料後就可以用了
+        if(f_auto == auto){  //狀態一樣就可以解除disable
+          $('input').removeAttr('disabled');
+          if(f_auto == 1 && f_change == 1){  //第一次執行自動更新  
+            setTimeout(getData, auto_time);
+          }
+        }
+        if(f_change != 1 && gameid == -1){ //自動更新要執行下一次的自動更新
+          setTimeout(getData, auto_time);
+          CD.start(); // 開始倒數
+        }
+      }
+    });
   }
   
   function checkAll(){
@@ -230,19 +218,28 @@
       showTable[0].rows[i+1].cells[0].innerHTML = data[i]['date_time'];
       showTable[0].rows[i+1].cells[1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
       showTable[0].rows[i+1].cells[2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
-      showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" class="delete" value="刪除" onclick="GD.delete()">';  
+      showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" class="delete" value="刪除" onclick="getData()">';  
     }
   }
 
   // 倒數計時
   function CountDown() {
     var timer = auto_time/1000;  // 設定倒數時間
-    var x;  // x是setTimeout
+    var flag = 0, x;  // flag表示是否重新倒數, x是setTimeout
     var CDspan = document.getElementById('countdown');
     return {
-      start: function () {  // 倒數中
+      start: function() {  // 開始倒數前
+        clearTimeout(x);   // 開始前把現有的倒數清掉
+        if(flag == 1){
+          timer = auto_time/1000;
+          flag = 0;
+        }
+        flag = 1; // 開始前把flag設為1
+        CD.startcount();
+      },
+      startcount: function () {  // 倒數中
         CDspan.innerHTML = timer;
-        x = setTimeout(CD.start, 1000);
+        x = setTimeout(CD.startcount, 1000);
         if(timer == 0){
           CD.stopc();
         }
@@ -251,12 +248,12 @@
         }
       },
       stopc: function () {  // 倒數結束
-        timer = auto_time/1000;  // 重設時間
-        clearTimeout(x);  
+        timer = auto_time/1000;
+        clearTimeout(x);
         CDspan.innerHTML = '更新中...';
       }
     }
   };
   
-
+  
 </script>

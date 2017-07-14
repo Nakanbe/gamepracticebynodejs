@@ -140,3 +140,40 @@ function funcF(str) {
 
 funcF('del');
 funcF('get');
+
+console.log('----------funcG-----------');
+
+function funcG() {
+  var count = 0;
+  count++;
+}
+
+function funcH() {
+  var count = 0;
+  return function () {
+    count++;
+    console.log('H:' + count);
+  };
+}
+
+var H = funcH();
+H();
+
+console.log('----------funcI-----------');
+
+function funcI(){
+  var count = 0;
+  return function (Itime) { 
+    count++;
+    return function (count2, Itime2){
+      setTimeout(function() {
+        console.log(Itime2 + ' I ' + count2);
+     },Itime*1000);
+    }(count, Itime);
+  };
+};
+
+var I = funcI();
+I(0.1);
+I(5);
+I(1);

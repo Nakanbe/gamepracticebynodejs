@@ -76,8 +76,8 @@
     
     //---------------------------------------------------------------------------------
     //把需要的資料處理成字串
-    //$game_id_str = arr_to_str($gamer_rst_Arr, 'game_id');
-    $game_id_str = implode(',', array_column($gamer_rst_Arr, 'game_id'));
+    $game_id_str = arr_to_str($gamer_rst_Arr, 'game_id');
+    // $game_id_str = implode(',', array_column($gamer_rst_Arr, 'game_id'));
   
     //利用game_id到game抓home_team和cust_team和league_id
     //query完後的資料會最後會放在$game_rst_Arr[home_team, cust_team, league_id]
@@ -99,11 +99,11 @@
     //利用$game_rst_Arr[home_team]和$game_rst_Arr[cust_team]到team抓sname_c和id
     //先把home_team 和 cust_team處理成字串
     //query完後的資料會最後會放在$team_name_c_Arr
-    //$home_team_str = arr_to_str($game_rst_Arr, 'home_team');
-    //$cust_team_str = arr_to_str($game_rst_Arr, 'cust_team');
+    $home_team_str = arr_to_str($game_rst_Arr, 'home_team');
+    $cust_team_str = arr_to_str($game_rst_Arr, 'cust_team');
     //php > 5.5.0
-    $home_team_str = implode(',', array_column($game_rst_Arr, 'home_team'));
-    $cust_team_str = implode(',', array_column($game_rst_Arr, 'cust_team'));
+    // $home_team_str = implode(',', array_column($game_rst_Arr, 'home_team'));
+    // $cust_team_str = implode(',', array_column($game_rst_Arr, 'cust_team'));
     //echo $home_team_str;
     
     //到資料庫抓資料
@@ -122,8 +122,8 @@
     //---------------------------------------------------------------------------------
     //利用$game_rst_Arr[league_id]到league抓name_c, id
     //query完後的資料會最後會放在$league_name_c_Arr
-    //$league_id_str = arr_to_str($game_rst_Arr, 'league_id');
-    $league_id_str = implode(',', array_column($game_rst_Arr, 'league_id'));
+    $league_id_str = arr_to_str($game_rst_Arr, 'league_id');
+    // $league_id_str = implode(',', array_column($game_rst_Arr, 'league_id'));
     
     //到資料庫抓資料
     $leagueTable_query = "SELECT name_c, id FROM league WHERE id IN (".$league_id_str.")";
@@ -174,5 +174,13 @@
     $del_query = "INSERT INTO chkSetResult (game_id) VALUES (". $gameid .")";
     $conn->query($del_query);
     die('{}');
+  }
+
+  function arr_to_str($arr, $key){
+    $tarr = array();
+    for($i = 0; $i < count($arr); $i++){
+      array_push($tarr, $arr[$i][$key]);
+    }
+    return implode(",", $tarr);
   }
 ?>

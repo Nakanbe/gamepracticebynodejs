@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>timer</title>
+</head>
+<body>
+  <h1>5</h1>
+  <hr>
+  <input type="button" onclick="CD.start();" value="Start"></input>
+  <input type="button" onclick="CD.stopc();" value="Stop"></input>
+</body>
+</html>
+
+<script>
+
+  function CountDown2() {
+    var timer = 5;
+    var x;
+    return {
+      start: function () {
+        document.getElementsByTagName('h1')[0].innerHTML = timer;
+        x = setTimeout(CD.start, 1000);
+        if(timer == 0){
+          CD.stopc();
+        }
+        else {
+          timer--;
+        }
+      },
+      stopc: function () {
+        timer = 5;
+        clearTimeout(x);
+        document.getElementsByTagName('h1')[0].innerHTML = 'Refreshing';
+      }
+    }
+  };
+
+  var CD = CountDown();
+
+  function CountDown() {
+    var timer = 5;
+    var x, flag = 0;;
+    return {
+      start: function() {
+        clearTimeout(x);
+        if(flag == 1){
+          timer = 5;
+          flag = 0;
+        }
+        flag = 1;
+        CD.startcount();
+      },
+      startcount: function () {
+        document.getElementsByTagName('h1')[0].innerHTML = timer;
+        x = setTimeout(CD.startcount, 1000);
+        if(timer == 0){
+          CD.stopc();
+        }
+        else {
+          timer--;
+        }
+      },
+      stopc: function () {
+        timer = 5;
+        clearTimeout(x);
+        document.getElementsByTagName('h1')[0].innerHTML = 'Refreshing';
+      }
+    }
+  };
+</script>

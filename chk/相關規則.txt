@@ -121,3 +121,11 @@ gamer->gtype（球種）對應如下：
 1.webform, gametypeform 合併 -> gameform
 2.webid, gametype 合併 -> gamecb
 3.checkbox_create 新增自動分行功能
+
+0714新增條件
+1.倒數計時
+2.array_column改掉
+
+0714
+1.GetData 重寫，改成用 closure 寫
+2.新增 CountDown 
