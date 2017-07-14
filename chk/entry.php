@@ -1,4 +1,5 @@
 <?php
+  header('Content-Type: application/json; charset=UTF-8');
   $entry = $_POST;
   //print_r($entry);
   switch($entry['gate']){

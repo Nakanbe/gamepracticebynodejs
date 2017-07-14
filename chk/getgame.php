@@ -1,11 +1,10 @@
 <?php
-  header('Content-Type: application/json; charset=UTF-8');
+
   function GetData($webid, $gametype) {
     include('dbconnect.php');
-    //sleep(10);
     $del_query= '';
     //取得array，串成字串
-    
+
     $webid_str = implode(',', $webid);
     $gametype_str = "'".implode("','", $gametype)."'";
     //$gametype_str = "'" + $gametype_str + "'";
@@ -170,6 +169,7 @@
   }
 
   function DeleteGame($gameid) {
+    header('Content-Type: application/json; charset=UTF-8');
     include('dbconnect.php');
     $del_query = "INSERT INTO chkSetResult (game_id) VALUES (". $gameid .")";
     $conn->query($del_query);

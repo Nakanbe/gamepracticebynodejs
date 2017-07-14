@@ -68,5 +68,56 @@ gamer->gtype（球種）對應如下：
 
 1.更新時間要可以選
 2.SQL IN 改 EXIST
+效能 NOT EXISTS > NOT IN
+     IN > EXISTS
 3.$_POST改成變數 ($qqq)
 4.arr_to_str 改成 reduce
+
+1.站台下拉從web來
+
+1.如果用ajax就要先處理好資料太慢回傳的狀態
+1.1 webname可以不用ajax直接在index取資料並印出就好
+2.改成checkbox可複選，有確定按鈕
+3.確定按鈕按下去之後才會顯示資料，並開始自動更新
+4.在下筆資料回傳之前都不要自動更新
+
+1.改成時間小於現在時間
+
+0710
+1.input加上class以利於判斷
+
+0711
+1.array to string 改成用array_column(php>5.5.0)
+2.語法null改寫 用NOT id IS NULL 判斷不是null
+2.1 id != 'NULL' 問題在於0也被判斷進來
+3.getWebname 的 callback 改成寫在裡面
+4.if(event && event.target.className){}
+  改成
+  if(event)
+    if(event.target.className)
+    
+0711新增條件
+1.加上全選checkbox
+2.兩個form之間用線隔開
+3.一樣的東西不要重複
+  auto_time = document.getElementById('set_time').value * 1000;
+  改成
+  auto_time;
+  change_time();
+4.資料庫連線拿出來 -> dbconnect
+
+0712新噌條件
+1.加上entry.php
+2.getgame, webname裡面都改成function
+
+0712
+1.db -> getgame
+2.增加gate參數，分辨在 entry 要 include 哪個檔，call哪個function
+
+0713新增條件
+1.checkbox要自動分行
+
+0713
+1.webform, gametypeform 合併 -> gameform
+2.webid, gametype 合併 -> gamecb
+3.checkbox_create 新增自動分行功能

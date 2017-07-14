@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <title>chk</title>
+  <title>i2</title>
 </head>
 <body onload="do_first();">
   <div>
@@ -63,102 +63,92 @@
   //第一次進入網站 
   function do_first(){
     //要先取到web的名字才繼續做
-    getWebname();
+    GetData();
   }
-  
-  function getWebname(){
-    $.ajax({
-      type: 'POST',
-      url: 'entry.php',
-      data: {
-        gate: 'getweb'
-      },
-      dataType: 'JSON',
-      error: function(xhr, ajaxOptions, thrownError){
-        console.log(xhr);
-      },
-      success: function(data){
-        var webid_sel = checkbox_create(data, 'webid');  // 產生checkbox
-        var sport_sel = checkbox_create(gtype, 'gametype');    // 產生checkbox
-        var table_sel = '<form id="gameform"><table border=1>'+webid_sel+sport_sel+'</table>';
-        $('#theCheckbox').append(table_sel+'<input type="button" class="change" value="確認" onclick="getData()">');  
-      }
-    });
-  }
-  
-  // 按下確認或刪除或自動更新
-  // form要分兩個送過去
-  var auto = 0;  // 整體狀態
-  var gamecb; // 抓取checkbox的資料
-  var xhr2;
-  // var xhrr;
-  function getData(){
-    var gameid = -1;  // 預設-1
-    var f_change = 0; // 是否為確認
-    var gate = 'auto';
+
+  var auto_refresh, ajax_xhr;
+  var webid, gametype; // 抓取checkbox的資料
+  function GetData(){
+    var send_data;
+    //清掉settimeout
+    if(auto_refresh){
+      clearTimeout(auto_refresh);
+    }
+    //清掉xhr
+    if(ajax_xhr){
+      ajax_xhr.abort();
+    }
     if(event){
       var x = event.target;
-      if(x.className == 'delete'){  // 按下刪除
-        //.parentNode.parentNode;
+      if(x == document){ //第一次進來
+        send_data = 'gate=getweb';
+        SendData(send_data, function(data) {
+          var webid_sel = checkbox_create(data, 'webid');  // 產生checkbox
+          var sport_sel = checkbox_create(gtype, 'gametype');    // 產生checkbox
+          var table_sel = '<table border=1>'+webid_sel+sport_sel+'</table>';
+          $('#theCheckbox').append(table_sel+'<input type="button" class="change" value="確認" onclick="GetData()">');  
+        });
+      }
+      else if(x.className == 'delete'){  //按下刪除
         while(x.tagName != 'TR'){
            x = x.parentNode;
         }
         gameid = x.attributes[0].value;
         x.remove();  // 移除這一列
-        auto++;   // 改變狀態
-        gate = 'delete';  // 設定gate
+        send_data = 'gate=delete&gameid='+gameid;
+        $('input').prop('disabled', true);
+        SendData(send_data,function(data) {
+          $('input').prop('disabled', false);
+          auto_refresh = setTimeout(GetData, auto_time);
+        });
       }
-      else if(x.className == 'change'){  // 確認按鈕
-        auto++; //改變狀態
-        f_change = 1;
-        gamecb = $('#gameform').serialize();  //取得checkbox的資料
-        gate = 'get';
-      }
-    }
-    var f_auto = auto;  //將整體狀態賦予給這次被呼叫的函式
-    xhr2 = $.ajax({
-      type: 'POST',
-      url: 'entry.php',
-      data: 'gate='+gate+'&'+'gameid='+gameid+'&'+gamecb,
-      dataType: 'JSON',
-      error: function(xhr, ajaxOptions, thrownError){
-        console.log(xhr);
-        output( [] );
-      },
-      success: function(data, status, xhr){  
-        //console.log(auto + ',' + f_auto);
-        if(gameid == -1){  //當不是刪除時
+      else if(x.className == 'change'){
+        webid = $('#thewebid').serialize();  //取得checkbox的資料
+        gametype = $('#thegametype').serialize();  //取得checkbox的資料
+        send_data = 'gate=get&'+webid+'&'+gametype;
+        $('input').prop('disabled', true);
+        SendData(send_data, function(data) {
+          $('input').prop('disabled', false);
           if(data[0] && data[0].hasOwnProperty('game_id')) {
           }
           else {
-            //console.log(err);
             data = [];
           }
-          if(f_auto == auto){ //整體狀態和function此次狀態一樣才能更新
-            //console.log(auto + ',' + f_auto);
-            output(data);
-          }
+          output(data);
+          auto_refresh = setTimeout(GetData, auto_time);
+        });
+      }
+    }
+    else{ //auto情況
+      send_data = 'gate=auto&'+webid+'&'+gametype;
+      SendData(send_data, function(data) {
+        if(data[0] && data[0].hasOwnProperty('game_id')) {
         }
+        else {
+          data = [];
+        }
+        output(data);
+        auto_refresh = setTimeout(GetData, auto_time);
+      });
+    }
+  }
+
+  function SendData(send_data, callback) {
+    ajax_xhr = $.ajax({
+      type: 'POST',
+      url: 'entry.php',
+      data: send_data,
+      datatype: 'JSON',
+      error: function(xhr, ajaxOptions, thrownError){
+        console.log(xhr);
+        callback( [] );
       },
-      beforeSend: function(){  //在資料回傳前disable掉
-        if(f_change == 1 || gameid != -1){  //當按下更新或刪除時
-          $('input').attr({disabled: 'disabled'});  //把checkbox和input disable掉
-        }
-      },
-      complete: function(){   //收到回傳資料後就可以用了
-        if(f_auto == auto){  //狀態一樣就可以解除disable
-          $('input').removeAttr('disabled');
-          if(f_auto == 1 && f_change == 1){  //第一次執行自動更新  
-            setTimeout(getData, auto_time);
-          }
-        }
-        if(f_change != 1 && gameid == -1){ //自動更新要執行下一次的自動更新
-          setTimeout(getData, auto_time);
-        }
+      success: function(data){
+        callback(data);
       }
     });
   }
-  
+
   //全選
   /*function checkAll2(){
     var cb = event.target;
@@ -193,20 +183,12 @@
   
   //產生下拉式選單
   function checkbox_create(arr, id){
-    var str = '<tr>';
-    var i = 0;
+    var str = '<tr><td><form id="the'+id+'">';
     for(var key in arr){  //checkbox用loop印出來，有[]在php POST才能是陣列
-      if(i%8 == 0 && i != 0){  //8個就換行
-        str += '</tr><tr>'; //自動換行
-      }
-      str += '<td><input type="checkbox" name="'+id+'[]" value="'+key+'"> ' + arr[key] + ' </input></td>';
-      i++;
+      str += '<input type="checkbox" name="'+id+'[]" value="'+key+'"> ' + arr[key] + ' </input>';
     }
-    if(i%8 == 0){ //8個就換行
-      str += '</tr><tr>';
-    }
-    str += '<td><input type="checkbox" id="check_all_'+id+'" onchange="checkAll();">全選</input></td>';
-    str += '</tr>';
+    str += '<input type="checkbox" id="check_all_'+id+'" onchange="checkAll();">全選</input>';
+    str += '</form></td></tr>';
     return str;
   }
   
@@ -235,7 +217,7 @@
       showTable[0].rows[i+1].cells[0].innerHTML = data[i]['date_time'];
       showTable[0].rows[i+1].cells[1].innerHTML = data[i]['league_name'] + '<br>' + data[i]['home_name'] + '[主] VS ' + data[i]['cust_name'];
       showTable[0].rows[i+1].cells[2].innerHTML = data[i]['home_s'] + ':' + data[i]['cust_s'];
-      showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" class="delete" value="刪除" onclick="getData()">';  
+      showTable[0].rows[i+1].cells[3].innerHTML  = '<input type="button" class="delete" value="刪除" onclick="GetData()">';  
     }
   }
   
